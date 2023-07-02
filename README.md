@@ -6,13 +6,12 @@ Implementation of uniform adaptive polygon triangulation algorithm illustrated i
 
 (figure 5: Adaptive Triangulation. The red curve represents the isocontour, green points represent minimizers. Right: Case Table for Decomposing the Interior Cell into Triangles.)
 
-Note: This algorithm adds new vertices during triangulation process.
+This algorithm adds new vertices during triangulation process. Works for both input polygon without any inner hole(s) and polygon with inner hole(s) and arbitrary shape(convex/concave).
 
 
 **Input** 
 - A list of ordered(orientation can be either clockwise or counter-clockwise) coplanar points(in vtkVector3d) that form a non-self-intersected polygon.
-The algorithm works for both input polygon without any inner hole(s) and polygon with inner hole(s).
-For polygon with inner hole(s), the inner hole(s) must be in opposite orientation as the outer contour. 
+- For polygon with inner hole(s), the inner hole(s) must be in opposite orientation as the outer contour. 
 eg. if a polygon has 2 inner holes, and outer contour is clockwise, then the 2 inner holes must be counter-clockwise. 
 
 
@@ -30,3 +29,11 @@ Also the optimal triangulation can be done by using customized weight functions.
 
 **Advantage**
 - VTK provides various filters that enables fast and robust triangulation of polygon, such as  [vtkTriangleFilter](https://vtk.org/doc/nightly/html/classvtkTriangleFilter.html) . However, due to the shape of polygon, it might produce silver triangles. By introducing new vertices, this algorithm (almost) eliminates the generation of silver triangles with relatively good performance.
+
+**Screenshot**
+- polygon without inner hole
+![image](https://github.com/gongwaner/UniformPolygonTriangulation/assets/29704759/e9e6fc26-3d07-4ea9-be65-c146f7de354e)
+
+- polygon with inner holes
+![image](https://github.com/gongwaner/UniformPolygonTriangulation/assets/29704759/c94848f9-2738-4563-bc24-87f0ca6c354f)
+
