@@ -6,6 +6,7 @@
 
 #include <vector>
 
+
 namespace Algorithm
 {
 	class UniformPolygonTriangulation
@@ -23,8 +24,6 @@ namespace Algorithm
 
 		//debug 
 		bool mDebug = false;
-		std::vector<vtkVector3d> debugSquarePoints;
-		std::vector<vtkSmartPointer<vtkPolyData>> debugSubPolygons;
 		vtkVector3d GetPlaneCenter() const;
 		vtkVector3d GetAxisX() const;
 		vtkVector3d GetAxisY() const;

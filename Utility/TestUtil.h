@@ -6,6 +6,7 @@
 #include <vtkVector.h>
 #include <vector>
 
+
 namespace TestUtil
 {
 	void AddPolyData(vtkSmartPointer<vtkPolyData> polyData, const double* color, std::vector<vtkSmartPointer<vtkActor>>& actors, bool wireFrame = false);

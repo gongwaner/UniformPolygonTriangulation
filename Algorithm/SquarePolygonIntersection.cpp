@@ -11,8 +11,6 @@
 
 namespace Algorithm
 {
-    //void SortIntersectionPoints(std::vector<vtkVector3d>& points, const vtkVector3d& start, const vtkVector3d& end);
-    //template <typename T, typename F> std::vector<size_t> SortIndices(const std::vector<T>& v, F comparator);
     template<typename T, typename F>
     std::vector<size_t> SortIndices(const std::vector<T>& v, F comparator)
     {
@@ -102,7 +100,7 @@ namespace Algorithm
 
     void SquarePolygonIntersection::InitializeHoles()
     {
-        if (mInnerHoles.size() == 0)
+        if (mInnerHoles.empty())
             return;
 
         int intervalStart = 0;
@@ -314,7 +312,7 @@ namespace Algorithm
             }
         }
 
-        if (polygonMap.size() == 0 && squareMap.size() == 0)
+        if (polygonMap.empty() && squareMap.empty())
             return false;
 
         //store 2 separate arrays, one for polygon, one for square
@@ -326,7 +324,7 @@ namespace Algorithm
 
     int SquarePolygonIntersection::GetNextPolygonIndex(int index)
     {
-        if (mInnerHoles.size() == 0)
+        if (mInnerHoles.empty())
             return (index + 1) % mPolygonPoints.size();
 
         for (const auto& range: mComponentIntervals)
@@ -335,12 +333,12 @@ namespace Algorithm
                 return index + 1 <= range.second ? index + 1 : range.first;
         }
 
-        return -1;//invalid index
+        return INVALID_POLYGON_INDEX;
     }
 
     void SquarePolygonIntersection::SetUpPolygonIntersection(const std::unordered_map<int, std::vector<vtkVector3d>>& polygonMap)
     {
-        bool hasHoles = mInnerHoles.size() > 0;
+        bool hasHoles = !mInnerHoles.empty();
         if (mDebug && hasHoles)
         {
             std::cout << "Inside SetUpPolygonIntersection(). End indices:";
@@ -451,7 +449,7 @@ namespace Algorithm
 
     int SquarePolygonIntersection::GetNextIntersectionPolygonIndex(int index)
     {
-        if (mInnerHoles.size() == 0)
+        if (mInnerHoles.empty())
             return (index + 1) % mPolygonVertices.size();
 
         for (const auto& range: mIntersectionIntervals)
@@ -460,7 +458,7 @@ namespace Algorithm
                 return index + 1 <= range.second ? index + 1 : range.first;
         }
 
-        return -1;//invalid index
+        return INVALID_POLYGON_INDEX;
     }
 
     void SquarePolygonIntersection::CalculateIntersectionPolygons()

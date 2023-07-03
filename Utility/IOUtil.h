@@ -6,6 +6,7 @@
 
 #include <vector>
 
+
 namespace Utility
 {
 	vtkSmartPointer<vtkPolyData> ReadPolyData(const std::string& fileName);

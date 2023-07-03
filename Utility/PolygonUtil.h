@@ -5,6 +5,7 @@
 #include <vtkVector.h>
 #include <vector>
 
+
 namespace Utility
 {
 	vtkSmartPointer<vtkPolyData> GetPolygonPolyData(const std::vector<vtkVector3d>& polygonPoints);

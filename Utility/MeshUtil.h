@@ -6,6 +6,7 @@
 
 #include <vector>
 
+
 namespace Utility
 {
     vtkVector3d GetAverageCenter(const std::vector<vtkVector3d>& points);

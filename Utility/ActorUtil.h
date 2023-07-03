@@ -7,6 +7,7 @@
 #include <vtkPolyDataMapper.h>
 #include <vtkLookupTable.h>
 
+
 namespace Utility
 {
 	vtkSmartPointer<vtkActor> GetPolyDataActor(vtkSmartPointer<vtkPolyDataMapper> mapper, vtkSmartPointer<vtkPolyData> polyData, const double* diffuseColor, double alpha = 1.0);

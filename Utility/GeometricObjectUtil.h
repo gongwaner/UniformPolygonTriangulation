@@ -5,6 +5,7 @@
 #include <vtkSphereSource.h>
 #include <vtkVector.h>
 
+
 namespace Utility
 {
 	vtkSmartPointer<vtkPolyData> GetPointsPolyData(vtkSmartPointer<vtkPoints> points);

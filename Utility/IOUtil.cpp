@@ -22,7 +22,7 @@ namespace Utility
     std::string GetFileExtensionLowerCase(const std::string& fileName)
     {
         std::string extension = "";
-        if (fileName.find_last_of(".") != std::string::npos)
+        if (fileName.find_last_of('.') != std::string::npos)
         {
             extension = fileName.substr(fileName.find_last_of("."));
         }

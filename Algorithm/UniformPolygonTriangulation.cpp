@@ -269,7 +269,8 @@ namespace Algorithm
         bool hasHoles = !mInnerHoles.empty();
         if (hasHoles)
         {
-            std::cout << "holes cnt: " << mInnerHoles.size() << std::endl;
+            if (mDebug)
+                std::cout << "holes cnt: " << mInnerHoles.size() << std::endl;
             InitializeHoles();
         }
 
@@ -293,10 +294,8 @@ namespace Algorithm
             std::reverse(startSquarePoints.begin(), startSquarePoints.end());
 
         std::vector<vtkVector3d> squarePoints(4);
-        int x = 0, y = 0;
         for (double offsetX = 0; offsetX < mBoundingBoxWidth; offsetX += mLength)
         {
-            y = 0;
             for (double offsetY = 0; offsetY < mBoundingBoxHeight; offsetY += mLength)
             {
                 for (int i = 0; i < squarePoints.size(); ++i)
@@ -305,9 +304,6 @@ namespace Algorithm
                     squarePoints[i] += offsetX * mAxisX;
                     squarePoints[i] -= offsetY * mAxisY;
                 }
-
-                if (mDebug)
-                    debugSquarePoints = squarePoints;
 
                 bool allSquarePointsInPolygon = AllPointsInPolygon(squarePoints);
 
@@ -348,18 +344,13 @@ namespace Algorithm
                     if (!subPolygon.empty())
                     {
                         if (mDebug)
-                        {
                             std::cout << "sub polygon points cnt = " << subPolygon.size() << std::endl;
-                            debugSubPolygons.push_back(Utility::GetPolygonPolyData(subPolygon));
-                        }
 
                         auto triangulatedPolygon = GetOptimalTriangulation(subPolygon, mNormal);
                         mSubTriangulationVector.push_back(triangulatedPolygon);
                     }
                 }
-                y++;
             }
-            x++;
         }
     }
 

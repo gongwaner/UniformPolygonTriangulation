@@ -55,6 +55,8 @@ void TestScanLineTriangulation(bool debug = false)
     double polygonNormal[3];
     Utility::ComputePolygonNormal(polygonPoints, polygonNormal);
 
+    auto start = std::chrono::high_resolution_clock::now();
+
     std::unique_ptr<UniformPolygonTriangulation> triangulation(new UniformPolygonTriangulation());
     triangulation->mDebug = debug;
     triangulation->SetPolygonPoints(polygonPoints);
@@ -62,9 +64,12 @@ void TestScanLineTriangulation(bool debug = false)
     triangulation->SetNormal(vtkVector3d(polygonNormal));
     triangulation->Triangulate();
 
+    auto stop = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
+    std::cout << "UniformPolygonTriangulation takes " << duration.count() << " ms" << std::endl;
 
+    //visualization
     vtkNew<vtkNamedColors> colors;
-    //actors
     std::vector<vtkSmartPointer<vtkActor>> actors;
     {
         //polygon
@@ -138,21 +143,6 @@ void TestScanLineTriangulation(bool debug = false)
             polydataActor->GetProperty()->SetRepresentationToWireframe();
             actors.push_back(polydataActor);
         }
-
-        //sub polygons
-        if (triangulation->mDebug)
-        {
-            //square
-            auto squarePoints = triangulation->debugSquarePoints;
-            TestUtil::AddPoint(squarePoints[0], 8, colors->GetColor3d("Crimson").GetData(), actors);
-            TestUtil::AddPoint(squarePoints[1], 8, colors->GetColor3d("Cyan").GetData(), actors);
-            TestUtil::AddPoint(squarePoints[2], 8, colors->GetColor3d("Blue").GetData(), actors);
-            TestUtil::AddPoint(squarePoints[3], 8, colors->GetColor3d("RosyBrown").GetData(), actors);
-
-            auto subPolygons = triangulation->debugSubPolygons;
-            for (auto polygon: subPolygons)
-                TestUtil::AddPolyData(polygon, colors->GetColor3d("DarkGreen").GetData(), actors, true);
-        }
     }
 
     //rendering
@@ -176,12 +166,5 @@ void TestScanLineTriangulation(bool debug = false)
 int main(int argc, char* argv[])
 {
     bool debug = false;
-
-    auto start = std::chrono::high_resolution_clock::now();
-
     TestScanLineTriangulation(debug);
-
-    auto stop = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
-    std::cout << "TestScanLineTriangulation() takes " << duration.count() << " ms" << std::endl;
 }

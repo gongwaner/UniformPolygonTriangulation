@@ -70,7 +70,7 @@ namespace Algorithm
         AddNewTriangles(table, table[i][j].k, j);
     }
 
-    void OptimalPolygonTriangulation::ConvexTriangulation(std::function<double(const vtkVector3d&, const vtkVector3d&, const vtkVector3d&)> weightFunc)
+    void OptimalPolygonTriangulation::ConvexTriangulation(const std::function<double(const vtkVector3d&, const vtkVector3d&, const vtkVector3d&)>& weightFunc)
     {
         int n = mPolygonPoints.size();
 
@@ -131,7 +131,7 @@ namespace Algorithm
         int begin2 = (j + 1) % n;
         int end2 = (i > 0) ? i - 1 : n - 1;
 
-        //check intersection betwen (i,j) and all polygon edges
+        //check intersection between (i,j) and all polygon edges
         for (int k = begin1; k < end1; ++k)
         {
             if (Utility::LineIntersects(mPolygonPoints[i], mPolygonPoints[j], mPolygonPoints[k], mPolygonPoints[k + 1]))
@@ -153,10 +153,10 @@ namespace Algorithm
         crossProducts[1] = v1.Cross(v3).Dot(mNormal); // V1xV3
         crossProducts[2] = v3.Cross(v2).Dot(mNormal); // V3xV2
 
-        //angle between v1 and v2 (in counter clockwise direction) is <= 180
+        //angle between v1 and v2 (in counter-clockwise direction) is <= 180
         if ((crossProducts[0] >= 0) && (crossProducts[1] >= 0) && (crossProducts[2] >= 0))
             return true;
-            //angle between v1 and v2 (in counter clockwise direction) is > 180
+            //angle between v1 and v2 (in counter-clockwise direction) is > 180
         else if ((crossProducts[0] < 0) && ((crossProducts[1] >= 0) || (crossProducts[2] >= 0)))
             return true;
 
@@ -243,6 +243,7 @@ namespace Algorithm
             std::fill(entry.begin(), entry.end(), false);
             diagonalMatrix.push_back(entry);
         }
+
         //initialize valid diagonals
         for (const auto& diagonal: validDiagonals)
         {
@@ -304,7 +305,7 @@ namespace Algorithm
         AddNewTriangles(table, 0, n - 1);
     }
 
-    void OptimalPolygonTriangulation::Triangulate(std::function<double(const vtkVector3d&, const vtkVector3d&, const vtkVector3d&)> weightFunc)
+    void OptimalPolygonTriangulation::Triangulate(const std::function<double(const vtkVector3d&, const vtkVector3d&, const vtkVector3d&)>& weightFunc)
     {
         if (mPolygonPoints.size() < 3)
             return;
@@ -314,8 +315,6 @@ namespace Algorithm
             AddNewTriangle(0, 1, 2);
             return;
         }
-
-        //std::cout << std::format("is convex: {}", mIsConvex ? "true" : "false") << std::endl;
 
         if (mIsConvex)
             ConvexTriangulation(weightFunc);
