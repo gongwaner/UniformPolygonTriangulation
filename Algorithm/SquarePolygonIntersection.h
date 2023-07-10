@@ -9,7 +9,7 @@
 namespace Algorithm
 {
     /**
-     * Calculate polygon intersection using weiler-atherton polygon clipping algorithm
+     * Calculate polygon intersection using Weiler-Atherton polygon clipping algorithm
      * ref: https://www.geeksforgeeks.org/weiler-atherton-polygon-clipping-algorithm/
      */
     class SquarePolygonIntersection
@@ -20,25 +20,24 @@ namespace Algorithm
         void SetPolygonPoints(const std::vector<vtkVector3d>& polygonPoints);
         void SetHoles(const std::vector<std::vector<vtkVector3d>>& holes);
         void SetSquarePoints(const std::vector<vtkVector3d>& squarePoints);
-        void SetPlane(const vtkVector3d& planeCenter, const vtkVector3d& planeNormal, const vtkVector3d& axisX, const vtkVector3d& axisY);
+        void SetPlane(const vtkVector3d& planeCenter, const vtkVector3d& axisX, const vtkVector3d& axisY);
+        void SetPrecision(double epsilon);
         void CalculateIntersectionPolygons();
         std::vector<std::vector<vtkVector3d>> GetIntersectedPolygon() const;
-
         bool mDebug = false;
-        const static int  INVALID_POLYGON_INDEX = -1;
 
     private:
         void InitializePolygon();
         void InitializeHoles();
         void InitializeSquare();
         bool PointInPolygon(const vtkVector3d& point);
-        bool PointInSquare(const vtkVector3d& point, const double epsilon = 1e-6);
-        bool LineIntersects(int squareLineID, const std::pair<int, int>& polyLine, vtkVector3d& intersectionPoint, const double epsilon);
+        bool PointInSquare(const vtkVector3d& point) const;
+        bool LineIntersects(int squareLineID, const std::pair<int, int>& polyLine, vtkVector3d& intersectionPoint) const;
         bool HasIntersection();
         void SetUpPolygonIntersection(const std::unordered_map<int, std::vector<vtkVector3d>>& polygonMap);
         void SetUpSquareIntersection(const std::unordered_map<int, std::vector<vtkVector3d>>& squareMap);
-        int GetNextPolygonIndex(int index);
-        int GetNextIntersectionPolygonIndex(int index);
+        int GetNextPolygonIndex(int index) const;
+        int GetNextIntersectionPolygonIndex(int index) const;
 
         std::vector<vtkVector3d> mPolygonPoints;
         std::vector<std::vector<vtkVector3d>> mInnerHoles;
@@ -47,7 +46,6 @@ namespace Algorithm
 
         //plane
         vtkVector3d mPlaneCenter;
-        vtkVector3d mPlaneNormal;
         vtkVector3d mAxisX;
         vtkVector3d mAxisY;
 
@@ -68,6 +66,8 @@ namespace Algorithm
         std::vector<std::pair<int, int>> mComponentIntervals;
         std::vector<std::pair<int, int>> mIntersectionIntervals;
         std::vector<std::vector<vtkVector3d>> mSubPolygons;
+
+        double mEpsilon = 1e-6;
     };
 }
 

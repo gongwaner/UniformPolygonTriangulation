@@ -111,12 +111,12 @@ namespace Algorithm
         AddNewTriangles(table, 0, n - 1);
     }
 
-    /// <summary>
-    /// check is 2 indices form a valid diagonal in polygon
-    /// for convex polygon the diagonal is valid as long as i,j has interval >= 2
-    /// for concave polygon the diagonal should be inside polygon
-    /// </summary>
-    bool OptimalPolygonTriangulation::IsValidDiagonal(int i, int j)
+    /**
+     * check is 2 indices form a valid diagonal in polygon
+     * for convex polygon the diagonal is valid as long as i,j has interval >= 2
+     * for concave polygon the diagonal should be inside polygon
+     */
+    bool OptimalPolygonTriangulation::IsValidDiagonal(int i, int j) const
     {
         if (abs(i - j) < 2)
             return false;
@@ -163,7 +163,7 @@ namespace Algorithm
         return false;
     }
 
-    std::vector<std::pair<int, int>> OptimalPolygonTriangulation::GetDiagonals()
+    std::vector<std::pair<int, int>> OptimalPolygonTriangulation::GetDiagonals() const
     {
         std::vector<std::pair<int, int>> diagonalVec;
 
@@ -203,11 +203,11 @@ namespace Algorithm
         return diagonalVec;
     }
 
-    /// <summary>
-    /// a triangle consists of 1 edge and 2 diagonals or 2 edges and 1 diagonal or 3 diagonals
-    /// if a line segment is neither edge nor diagonal, it can't be a part of a triangle
-    /// </summary>
-    bool OptimalPolygonTriangulation::IsTriangle(const std::vector<std::vector<bool>>& diagonalMatrix, int i, int j, int k)
+    /**
+     * a triangle consists of 1 edge and 2 diagonals or 2 edges and 1 diagonal or 3 diagonals
+     * if a line segment is neither edge nor diagonal, it can't be a part of a triangle
+     */
+    bool OptimalPolygonTriangulation::IsTriangle(const std::vector<std::vector<bool>>& diagonalMatrix, int i, int j, int k) const
     {
         bool edge;
         int absValue;
@@ -305,24 +305,7 @@ namespace Algorithm
         AddNewTriangles(table, 0, n - 1);
     }
 
-    void OptimalPolygonTriangulation::Triangulate(const std::function<double(const vtkVector3d&, const vtkVector3d&, const vtkVector3d&)>& weightFunc)
-    {
-        if (mPolygonPoints.size() < 3)
-            return;
-
-        if (mPolygonPoints.size() == 3)
-        {
-            AddNewTriangle(0, 1, 2);
-            return;
-        }
-
-        if (mIsConvex)
-            ConvexTriangulation(weightFunc);
-        else
-            ConcaveTriangulation(weightFunc);
-    }
-
-    vtkSmartPointer<vtkPolyData> OptimalPolygonTriangulation::GetTriangulatedPolygon()
+    void OptimalPolygonTriangulation::GeneratePolyData()
     {
         mTriangulatedPolygon = vtkSmartPointer<vtkPolyData>::New();
 
@@ -332,7 +315,30 @@ namespace Algorithm
 
         mTriangulatedPolygon->SetPoints(points);
         mTriangulatedPolygon->SetPolys(mNewTriangles);
+    }
 
+    void OptimalPolygonTriangulation::Triangulate(const std::function<double(const vtkVector3d&, const vtkVector3d&, const vtkVector3d&)>& weightFunc)
+    {
+        if (mPolygonPoints.size() < 3)
+            return;
+
+        if (mPolygonPoints.size() == 3)
+        {
+            AddNewTriangle(0, 1, 2);
+            GeneratePolyData();
+            return;
+        }
+
+        if (mIsConvex)
+            ConvexTriangulation(weightFunc);
+        else
+            ConcaveTriangulation(weightFunc);
+
+        GeneratePolyData();
+    }
+
+    vtkSmartPointer<vtkPolyData> OptimalPolygonTriangulation::GetTriangulatedPolygon() const
+    {
         return mTriangulatedPolygon;
     }
 }

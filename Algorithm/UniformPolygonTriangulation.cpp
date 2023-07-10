@@ -52,6 +52,42 @@ namespace Algorithm
         return squarePolyData;
     }
 
+    std::vector<std::vector<vtkVector3d>> GetSquarePolygonIntersectionPolygon(const std::vector<vtkVector3d>& squarePoints,
+                                                                                                                            const std::vector<vtkVector3d>& polygonPoints,
+                                                                                                                            const std::vector<std::vector<vtkVector3d>>& innerHoles,
+                                                                                                                            const vtkVector3d& planeCenter,
+                                                                                                                            const vtkVector3d& axisX, const vtkVector3d& axisY)
+    {
+        SquarePolygonIntersection polygonIntersection;
+        polygonIntersection.SetPolygonPoints(polygonPoints);
+        polygonIntersection.SetHoles(innerHoles);
+        polygonIntersection.SetSquarePoints(squarePoints);
+        polygonIntersection.SetPlane(planeCenter, axisX, axisY);
+        polygonIntersection.CalculateIntersectionPolygons();
+
+        return polygonIntersection.GetIntersectedPolygon();
+    }
+
+    double WeightOf(const vtkVector3d& p0, const vtkVector3d& p1, const vtkVector3d& p2)
+    {
+        std::vector<double> edgeLengths;
+        edgeLengths.push_back((p1 - p0).Norm());
+        edgeLengths.push_back((p2 - p1).Norm());
+        edgeLengths.push_back((p0 - p2).Norm());
+
+        return *std::max_element(edgeLengths.begin(), edgeLengths.end()) / *std::min_element(edgeLengths.begin(), edgeLengths.end());
+    }
+
+    vtkSmartPointer<vtkPolyData> GetOptimalTriangulation(const std::vector<vtkVector3d>& polygonPoints, const vtkVector3d& normal)
+    {
+        OptimalPolygonTriangulation triangulation;
+        triangulation.SetPolygonPoints(polygonPoints);
+        triangulation.SetNormal(normal);
+        triangulation.Triangulate(WeightOf);
+
+        return triangulation.GetTriangulatedPolygon();
+    }
+
     void UniformPolygonTriangulation::SetPolygonPoints(const std::vector<vtkVector3d>& polygonPoints)
     {
         mPolygonPoints = polygonPoints;
@@ -59,9 +95,6 @@ namespace Algorithm
 
     void UniformPolygonTriangulation::SetHoles(const std::vector<std::vector<vtkVector3d>>& holes)
     {
-        if (holes.empty())
-            return;
-
         mInnerHoles = holes;
     }
 
@@ -231,41 +264,10 @@ namespace Algorithm
         return isInAnyHole;
     }
 
-    std::vector<std::vector<vtkVector3d>> UniformPolygonTriangulation::GetSquarePolygonIntersectionPolygon(const std::vector<vtkVector3d>& squarePoints)
-    {
-        SquarePolygonIntersection polygonIntersection;
-        polygonIntersection.SetPolygonPoints(mPolygonPoints);
-        polygonIntersection.SetHoles(mInnerHoles);
-        polygonIntersection.SetSquarePoints(squarePoints);
-        polygonIntersection.SetPlane(mPlaneCenter, mNormal, mAxisX, mAxisY);
-        polygonIntersection.CalculateIntersectionPolygons();
-
-        return polygonIntersection.GetIntersectedPolygon();
-    }
-
-    double WeightOf(const vtkVector3d& p0, const vtkVector3d& p1, const vtkVector3d& p2)
-    {
-        std::vector<double> edgeLengths;
-        edgeLengths.push_back((p1 - p0).Norm());
-        edgeLengths.push_back((p2 - p1).Norm());
-        edgeLengths.push_back((p0 - p2).Norm());
-
-        return *std::max_element(edgeLengths.begin(), edgeLengths.end()) / *std::min_element(edgeLengths.begin(), edgeLengths.end());
-    }
-
-    vtkSmartPointer<vtkPolyData> GetOptimalTriangulation(const std::vector<vtkVector3d>& polygonPoints, const vtkVector3d& normal)
-    {
-        OptimalPolygonTriangulation triangulation;
-        triangulation.SetPolygonPoints(polygonPoints);
-        triangulation.SetNormal(normal);
-        triangulation.Triangulate(WeightOf);
-
-        return triangulation.GetTriangulatedPolygon();
-    }
-
     void UniformPolygonTriangulation::Triangulate()
     {
         InitializePolygon();
+
         bool hasHoles = !mInnerHoles.empty();
         if (hasHoles)
         {
@@ -280,8 +282,10 @@ namespace Algorithm
         if (mDebug)
             std::cout << "bounding box width = " << mBoundingBoxWidth << ", height = " << mBoundingBoxHeight << ", pixel size = " << mLength << std::endl;
 
+        const int squarePntsCnt = 4;
+
         //make a square whose orientation is same as polygon
-        std::vector<vtkVector3d> startSquarePoints(4);
+        std::vector<vtkVector3d> startSquarePoints(squarePntsCnt);
         startSquarePoints[0] = mUpperLeftCorner;
         startSquarePoints[1] = mUpperLeftCorner - mAxisY * mLength;
         startSquarePoints[2] = startSquarePoints[1] + mAxisX * mLength;
@@ -293,7 +297,8 @@ namespace Algorithm
         if (vtkVector3d(squareNormal).Dot(mNormal) < 0)
             std::reverse(startSquarePoints.begin(), startSquarePoints.end());
 
-        std::vector<vtkVector3d> squarePoints(4);
+        //iterate through each pixel
+        std::vector<vtkVector3d> squarePoints(squarePntsCnt);
         for (double offsetX = 0; offsetX < mBoundingBoxWidth; offsetX += mLength)
         {
             for (double offsetY = 0; offsetY < mBoundingBoxHeight; offsetY += mLength)
@@ -330,7 +335,7 @@ namespace Algorithm
                 }
 
                 //calculate intersected polygon and triangulate
-                auto subPolygons = GetSquarePolygonIntersectionPolygon(squarePoints);
+                auto subPolygons = GetSquarePolygonIntersectionPolygon(squarePoints, mPolygonPoints, mInnerHoles, mPlaneCenter, mAxisX, mAxisY);
                 if (subPolygons.empty() && allSquarePointsInPolygon)
                 {
                     if (mDebug)
@@ -352,11 +357,13 @@ namespace Algorithm
                 }
             }
         }
+
+        mTriangulatedPolygon = Utility::GetCombinedPolyData(mSubTriangulationVector);
     }
 
     vtkSmartPointer<vtkPolyData> UniformPolygonTriangulation::GetTriangulatedPolygon() const
     {
-        return Utility::GetCombinedPolyData(mSubTriangulationVector);
+        return mTriangulatedPolygon;
     }
 
     vtkVector3d UniformPolygonTriangulation::GetPlaneCenter() const

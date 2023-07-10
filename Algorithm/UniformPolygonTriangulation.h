@@ -9,60 +9,73 @@
 
 namespace Algorithm
 {
-	class UniformPolygonTriangulation
-	{
-	public:
-		UniformPolygonTriangulation() = default;
-		~UniformPolygonTriangulation() = default;
+    /**
+     * uniform polygon triangulation algorithm as illustrated in
+     * Zhang, Yongjie & Bajaj, Chandrajit & Sohn, Bong-soo. (2003). Adaptive Multiresolution and Quality 3D Meshing from Imaging Data.
+     *
+     * works by introducing new vertices.
+     * General algorithm:
+     * 1.calculate the oriented bounding box of the polygon
+     * 2.starting from bounding box's upper left corner, sweep the polygon in a left-to-right, upper-to-bottom order using specified square/pixel size
+     * 3.for each pixel, calculate the intersected polygon of square and polygon
+     * 4.triangulate intersected sub-polygon using optimal triangulation
+     * 5.combine all triangulated sub-polygon into final triangulated polygon
+     *
+     * Note: weight function for optimal triangulation used here is aspect ratio of triangle, but this can be customized to apply to different scenarios
+     */
+    class UniformPolygonTriangulation
+    {
+    public:
+        UniformPolygonTriangulation() = default;
+        ~UniformPolygonTriangulation() = default;
+        void SetPolygonPoints(const std::vector<vtkVector3d>& polygonPoints);
+        void SetHoles(const std::vector<std::vector<vtkVector3d>>& holes);
+        void SetNormal(const vtkVector3d& planeNormal);
+        void SetSquareSize(const double size);
+        void Triangulate();
+        vtkSmartPointer<vtkPolyData> GetTriangulatedPolygon() const;
 
-		void SetPolygonPoints(const std::vector<vtkVector3d>& polygonPoints);
-		void SetHoles(const std::vector<std::vector<vtkVector3d>>& holes);
-		void SetNormal(const vtkVector3d& planeNormal);
-		void SetSquareSize(const double size);
-		void Triangulate();
-		vtkSmartPointer<vtkPolyData> GetTriangulatedPolygon() const;
-
-		//debug 
-		bool mDebug = false;
-		vtkVector3d GetPlaneCenter() const;
-		vtkVector3d GetAxisX() const;
-		vtkVector3d GetAxisY() const;
-		vtkVector3d GetUpperLeftCorner() const;
-		double GetBoundingBoxWidth() const;
-		double GetBoundingBoxHeight() const;
+        //debug
+        bool mDebug = false;
+        vtkVector3d GetPlaneCenter() const;
+        vtkVector3d GetAxisX() const;
+        vtkVector3d GetAxisY() const;
+        vtkVector3d GetUpperLeftCorner() const;
+        double GetBoundingBoxWidth() const;
+        double GetBoundingBoxHeight() const;
 
 
-	private:
-		void InitializePlane();
-		void InitializePolygon();
-		void InitializeHoles();
-		bool IsInPolygon(const vtkVector3d& point);
-		bool IsInHole(const vtkVector3d& point, int holeID);
-		bool AllPointsInPolygon(const std::vector<vtkVector3d>& points);
-		bool AllPointsInHole(const std::vector<vtkVector3d>& points);
-		std::vector<std::vector<vtkVector3d>> GetSquarePolygonIntersectionPolygon(const std::vector<vtkVector3d>& squarePoints);
+    private:
+        void InitializePlane();
+        void InitializePolygon();
+        void InitializeHoles();
+        bool IsInPolygon(const vtkVector3d& point);
+        bool IsInHole(const vtkVector3d& point, int holeID);
+        bool AllPointsInPolygon(const std::vector<vtkVector3d>& points);
+        bool AllPointsInHole(const std::vector<vtkVector3d>& points);
 
-		std::vector<vtkVector3d> mPolygonPoints;
-		std::vector<std::vector<vtkVector3d>> mInnerHoles;
-		double mLength = 0;
+        std::vector<vtkVector3d> mPolygonPoints;
+        std::vector<std::vector<vtkVector3d>> mInnerHoles;
+        double mLength = 0;
 
-		vtkVector3d mPlaneCenter;
-		vtkVector3d mNormal;
-		vtkVector3d mAxisX;
-		vtkVector3d mAxisY;
+        vtkVector3d mPlaneCenter;
+        vtkVector3d mNormal;
+        vtkVector3d mAxisX;
+        vtkVector3d mAxisY;
 
-		//inside/outside query
-		std::vector<double> mPolygonPointsData2d;
-		double mPolygonBounds[6];
+        //inside/outside query
+        std::vector<double> mPolygonPointsData2d;
+        double mPolygonBounds[6];
 
-		std::vector<std::vector<double>> mHolePointsData2dVector;
-		std::vector<std::vector<double>> mHolesBounds;
+        std::vector<std::vector<double>> mHolePointsData2dVector;
+        std::vector<std::vector<double>> mHolesBounds;
 
-		vtkVector3d mUpperLeftCorner;
-		double mBoundingBoxWidth, mBoundingBoxHeight;
+        vtkVector3d mUpperLeftCorner;
+        double mBoundingBoxWidth, mBoundingBoxHeight;
 
-		std::vector<vtkSmartPointer<vtkPolyData>> mSubTriangulationVector;
-	};
+        std::vector<vtkSmartPointer<vtkPolyData>> mSubTriangulationVector;
+        vtkSmartPointer<vtkPolyData> mTriangulatedPolygon = nullptr;
+    };
 }
 
 
