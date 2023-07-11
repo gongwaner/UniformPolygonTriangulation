@@ -14,6 +14,10 @@ namespace Algorithm
      * Zhang, Yongjie & Bajaj, Chandrajit & Sohn, Bong-soo. (2003). Adaptive Multiresolution and Quality 3D Meshing from Imaging Data.
      *
      * works by introducing new vertices.
+     * Input:
+     * ordered polygon points. The polygon CANNOT self intersect.
+     * If there are inner holes, pass inner holes in opposite orientation as outer contour.
+     *
      * General algorithm:
      * 1.calculate the oriented bounding box of the polygon
      * 2.starting from bounding box's upper left corner, sweep the polygon in a left-to-right, upper-to-bottom order using specified square/pixel size
@@ -73,7 +77,6 @@ namespace Algorithm
         vtkVector3d mUpperLeftCorner;
         double mBoundingBoxWidth, mBoundingBoxHeight;
 
-        std::vector<vtkSmartPointer<vtkPolyData>> mSubTriangulationVector;
         vtkSmartPointer<vtkPolyData> mTriangulatedPolygon = nullptr;
     };
 }

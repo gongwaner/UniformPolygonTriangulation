@@ -30,6 +30,11 @@ namespace Algorithm
         mNormal = normal;
     }
 
+    void OptimalPolygonTriangulation::SetWeightFunction(const std::function<double(const vtkVector3d&, const vtkVector3d&, const vtkVector3d&)>& weightFunc)
+    {
+        mWeightFunc = weightFunc;
+    }
+
     void OptimalPolygonTriangulation::AddNewTriangle(int vid0, int vid1, int vid2)
     {
         double triNormal[3];
@@ -70,7 +75,7 @@ namespace Algorithm
         AddNewTriangles(table, table[i][j].k, j);
     }
 
-    void OptimalPolygonTriangulation::ConvexTriangulation(const std::function<double(const vtkVector3d&, const vtkVector3d&, const vtkVector3d&)>& weightFunc)
+    void OptimalPolygonTriangulation::ConvexTriangulation()
     {
         int n = mPolygonPoints.size();
 
@@ -95,7 +100,7 @@ namespace Algorithm
                     table[i][j].weight = DBL_MAX;
                     for (int k = i + 1; k < j; k++)
                     {
-                        double weight = table[i][k].weight + table[k][j].weight + weightFunc(mPolygonPoints[i], mPolygonPoints[j], mPolygonPoints[k]);
+                        double weight = table[i][k].weight + table[k][j].weight + mWeightFunc(mPolygonPoints[i], mPolygonPoints[j], mPolygonPoints[k]);
 
                         if (table[i][j].weight > weight)
                         {
@@ -230,7 +235,7 @@ namespace Algorithm
         return true;
     }
 
-    void OptimalPolygonTriangulation::ConcaveTriangulation(std::function<double(const vtkVector3d&, const vtkVector3d&, const vtkVector3d&)> weightFunc)
+    void OptimalPolygonTriangulation::ConcaveTriangulation()
     {
         int n = mPolygonPoints.size();
 
@@ -270,7 +275,7 @@ namespace Algorithm
                 else if (j == i + 2)
                 {
                     if (diagonalMatrix[i][j])
-                        table[i][j].weight = weightFunc(mPolygonPoints[i], mPolygonPoints[i + 1], mPolygonPoints[i + 2]);
+                        table[i][j].weight = mWeightFunc(mPolygonPoints[i], mPolygonPoints[i + 1], mPolygonPoints[i + 2]);
                     else
                         table[i][j].weight = DBL_MAX;
                 }
@@ -289,7 +294,7 @@ namespace Algorithm
                             continue;
                         }
 
-                        double weight = table[i][k].weight + table[k][j].weight + weightFunc(mPolygonPoints[i], mPolygonPoints[j], mPolygonPoints[k]);
+                        double weight = table[i][k].weight + table[k][j].weight + mWeightFunc(mPolygonPoints[i], mPolygonPoints[j], mPolygonPoints[k]);
 
                         if (table[i][j].weight > weight)
                         {
@@ -317,7 +322,7 @@ namespace Algorithm
         mTriangulatedPolygon->SetPolys(mNewTriangles);
     }
 
-    void OptimalPolygonTriangulation::Triangulate(const std::function<double(const vtkVector3d&, const vtkVector3d&, const vtkVector3d&)>& weightFunc)
+    void OptimalPolygonTriangulation::Triangulate()
     {
         if (mPolygonPoints.size() < 3)
             return;
@@ -330,9 +335,9 @@ namespace Algorithm
         }
 
         if (mIsConvex)
-            ConvexTriangulation(weightFunc);
+            ConvexTriangulation();
         else
-            ConcaveTriangulation(weightFunc);
+            ConcaveTriangulation();
 
         GeneratePolyData();
     }
