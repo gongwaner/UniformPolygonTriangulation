@@ -1,12 +1,11 @@
 # UniformPolygonTriangulation
 
-Implementation of uniform adaptive polygon triangulation algorithm illustrated in paper "Adaptive and quality 3D meshing from imaging data"(Zhang, Yongjie & Bajaj, Chandrajit & Sohn, Bong-soo, 2003) using VTK9.2.6
+Implementation of uniform adaptive polygon triangulation algorithm illustrated in paper "Adaptive and quality 3D meshing from imaging data"(Zhang, Yongjie & Bajaj, Chandrajit & Sohn, Bong-soo, 2003) with slight changes using VTK9.2.6.
 
-![image](https://github.com/gongwaner/UniformPolygonTriangulation/assets/29704759/88a5a538-54ff-4275-8c45-b03a61ef73c8)
+![image](https://github.com/gongwaner/UniformPolygonTriangulation/assets/29704759/e6a3d3d1-d49b-4c7e-91f5-4def7f8d7c12)
 
-(figure 5: Adaptive Triangulation. The red curve represents the isocontour, green points represent minimizers. Right: Case Table for Decomposing the Interior Cell into Triangles.)
 
-This algorithm adds new vertices during triangulation process. Works for both input polygon without any inner hole(s) and polygon with inner hole(s) and arbitrary shape(convex/concave).
+This algorithm adds new vertices during triangulation process. Works for both input polygon without any inner hole(s) and polygon with inner hole(s) and arbitrary shape(convex/concave). 
 
 **Input** 
 - A list of ordered(orientation can be either clockwise or counter-clockwise) coplanar points(in vtkVector3d) that form a non-self-intersected polygon.
@@ -14,7 +13,7 @@ This algorithm adds new vertices during triangulation process. Works for both in
 eg. if a polygon has 2 inner holes, and outer contour is clockwise, then the 2 inner holes must be counter-clockwise. 
 
 **Algorithm**
- - Calculate the bounding box of the polygon
+ - Calculate the oriented bounding box of the polygon
  - starting from bounding box's upper left corner, sweep the polygon in a left-to-right, upper-to-bottom order using specified square/pixel size
 	 - for each square/pixel
 	     - calculate the intersected polygon between square and polygon(polygon clipping)
@@ -29,6 +28,8 @@ eg. if a polygon has 2 inner holes, and outer contour is clockwise, then the 2 i
 - VTK provides various filters that enable fast and robust triangulation of polygon, such as  [vtkTriangleFilter](https://vtk.org/doc/nightly/html/classvtkTriangleFilter.html). However, due to the shape of polygon, it might produce silver triangles. By introducing new vertices, this algorithm (almost) eliminates the generation of silver triangles with relatively good performance.
 
 **Build**
+
+The code runs on both win and mac platform.
 
 Note: If you are using Mac Intel chip, disable/comment out the 
 
