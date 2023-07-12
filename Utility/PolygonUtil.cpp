@@ -4,6 +4,7 @@
 #include <vtkPolygon.h>
 #include <vtkVectorOperators.h>
 #include <vtkLine.h>
+#include <vtkTriangle.h>
 
 #include <queue>
 
@@ -33,7 +34,6 @@ namespace Utility
 
         return polygonPolyData;
     }
-
 
     bool LineIntersects(const vtkVector3d& line1Start, const vtkVector3d& line1End, const vtkVector3d& line2Start, const vtkVector3d& line2End)
     {
@@ -65,11 +65,10 @@ namespace Utility
         return false;
     }
 
-
-    /// <summary>
-    /// compute normal for any kind of polygon. as vtkPolygon::ComputeNormal only works for convex polygon
-    /// ref: https://gitlab.kitware.com/vtk/vtk/-/issues/11988
-    /// </summary>
+    /**
+     * compute normal for any kind of polygon. as vtkPolygon::ComputeNormal only works for convex polygon
+     * ref: https://gitlab.kitware.com/vtk/vtk/-/issues/11988
+     */
     void ComputePolygonNormal(const std::vector<vtkVector3d>& polygonPoints, double normal[3])
     {
         normal[0] = 0;
@@ -99,6 +98,28 @@ namespace Utility
     bool EpsilonEqual(const vtkVector3d& p0, const vtkVector3d& p1, double epsilon)
     {
         return abs(p0[0] - p1[0]) < epsilon && abs(p0[1] - p1[1]) < epsilon && abs(p0[2] - p1[2]) < epsilon;
+    }
+
+    vtkSmartPointer<vtkTriangle> GetTriangle(const std::vector<vtkVector3d>& points, int vid0, int vid1, int vid2, const vtkVector3d& planeNormal)
+    {
+        double triNormal[3];
+        vtkTriangle::ComputeNormal(points[vid0].GetData(), points[vid1].GetData(), points[vid2].GetData(), triNormal);
+
+        auto triangle = vtkSmartPointer<vtkTriangle>::New();
+        if (vtkVector3d(triNormal).Dot(planeNormal) < 0)
+        {
+            triangle->GetPointIds()->SetId(0, vid0);
+            triangle->GetPointIds()->SetId(1, vid1);
+            triangle->GetPointIds()->SetId(2, vid2);
+        }
+        else
+        {
+            triangle->GetPointIds()->SetId(0, vid2);
+            triangle->GetPointIds()->SetId(1, vid1);
+            triangle->GetPointIds()->SetId(2, vid0);
+        }
+
+        return triangle;
     }
 }
 

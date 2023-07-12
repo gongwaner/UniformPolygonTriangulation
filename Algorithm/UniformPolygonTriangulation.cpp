@@ -12,28 +12,6 @@
 
 namespace Algorithm
 {
-    vtkSmartPointer<vtkTriangle> GetTriangle(const std::vector<vtkVector3d>& points, int vid0, int vid1, int vid2, const vtkVector3d& planeNormal)
-    {
-        double triNormal[3];
-        vtkTriangle::ComputeNormal(points[vid0].GetData(), points[vid1].GetData(), points[vid2].GetData(), triNormal);
-
-        auto triangle = vtkSmartPointer<vtkTriangle>::New();
-        if (vtkVector3d(triNormal).Dot(planeNormal) < 0)
-        {
-            triangle->GetPointIds()->SetId(0, vid0);
-            triangle->GetPointIds()->SetId(1, vid1);
-            triangle->GetPointIds()->SetId(2, vid2);
-        }
-        else
-        {
-            triangle->GetPointIds()->SetId(0, vid2);
-            triangle->GetPointIds()->SetId(1, vid1);
-            triangle->GetPointIds()->SetId(2, vid0);
-        }
-
-        return triangle;
-    }
-
     vtkSmartPointer<vtkPolyData> MakeSquare(const std::vector<vtkVector3d>& squarePoints, const vtkVector3d& planeNormal)
     {
         auto squarePolyData = vtkSmartPointer<vtkPolyData>::New();
@@ -43,8 +21,8 @@ namespace Algorithm
             points->InsertNextPoint(point.GetData());
 
         auto newTris = vtkSmartPointer<vtkCellArray>::New();
-        newTris->InsertNextCell(GetTriangle(squarePoints, 0, 1, 2, planeNormal));
-        newTris->InsertNextCell(GetTriangle(squarePoints, 0, 2, 3, planeNormal));
+        newTris->InsertNextCell(Utility::GetTriangle(squarePoints, 0, 1, 2, planeNormal));
+        newTris->InsertNextCell(Utility::GetTriangle(squarePoints, 0, 2, 3, planeNormal));
 
         squarePolyData->SetPoints(points);
         squarePolyData->SetPolys(newTris);

@@ -415,7 +415,6 @@ namespace Algorithm
                             std::cout << "push intersection point " << intersectionPoints[k] << std::endl;
                     }
                 }
-
             }
 
             if (hasHoles && mComponentEndIndices.count(i))

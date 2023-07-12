@@ -37,23 +37,7 @@ namespace Algorithm
 
     void OptimalPolygonTriangulation::AddNewTriangle(int vid0, int vid1, int vid2)
     {
-        double triNormal[3];
-        vtkTriangle::ComputeNormal(mPolygonPoints[vid0].GetData(), mPolygonPoints[vid1].GetData(), mPolygonPoints[vid2].GetData(), triNormal);
-
-        auto triangle = vtkSmartPointer<vtkTriangle>::New();
-        if (vtkVector3d(triNormal).Dot(mNormal) < 0)
-        {
-            triangle->GetPointIds()->SetId(0, vid0);
-            triangle->GetPointIds()->SetId(1, vid1);
-            triangle->GetPointIds()->SetId(2, vid2);
-        }
-        else
-        {
-            triangle->GetPointIds()->SetId(0, vid2);
-            triangle->GetPointIds()->SetId(1, vid1);
-            triangle->GetPointIds()->SetId(2, vid0);
-        }
-
+        auto triangle = Utility::GetTriangle(mPolygonPoints, vid0, vid1, vid2, mNormal);
         mNewTriangles->InsertNextCell(triangle);
     }
 
@@ -161,7 +145,7 @@ namespace Algorithm
         //angle between v1 and v2 (in counter-clockwise direction) is <= 180
         if ((crossProducts[0] >= 0) && (crossProducts[1] >= 0) && (crossProducts[2] >= 0))
             return true;
-            //angle between v1 and v2 (in counter-clockwise direction) is > 180
+        //angle between v1 and v2 (in counter-clockwise direction) is > 180
         else if ((crossProducts[0] < 0) && ((crossProducts[1] >= 0) || (crossProducts[2] >= 0)))
             return true;
 

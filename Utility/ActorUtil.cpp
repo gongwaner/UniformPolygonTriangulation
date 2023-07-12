@@ -39,7 +39,6 @@ namespace Utility
 		return pointActor;
 	}
 
-
 	vtkSmartPointer<vtkActor> GetPointsActor(const std::vector<vtkVector3d>& pointsVector, float pointSize, const double* pointColor)
 	{
 		vtkNew<vtkPoints> points;

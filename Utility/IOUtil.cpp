@@ -85,7 +85,6 @@ namespace Utility
         return polyData;
     }
 
-
     void WritePolyData(const std::string& fileName, vtkSmartPointer<vtkPolyData> polyData)
     {
         std::string extension = GetFileExtensionLowerCase(fileName);
