@@ -12,57 +12,30 @@
 #include <vtkRenderWindowInteractor.h>
 #include <vtkRenderer.h>
 
-#include <chrono>
-
 #include "Utility/ActorUtil.h"
 #include "Utility/PolygonUtil.h"
 #include "Utility/TestUtil.h"
-
+#include "Utility/IOUtil.h"
 #include "Algorithm/UniformPolygonTriangulation.h"
 
-void TestScanLineTriangulation(bool debug = false)
+#include <chrono>
+
+
+void TestScanLineTriangulation(const std::vector<vtkVector3d>& polygonPoints, const std::vector<std::vector<vtkVector3d>>& holes, bool debug = false)
 {
     using namespace Algorithm;
-
-    std::vector<vtkVector3d> polygonPoints;
-    std::vector<std::vector<vtkVector3d>> holes;
-
-    polygonPoints.push_back(vtkVector3d(2.51, 8.32, 0));
-    polygonPoints.push_back(vtkVector3d(1.86, 13.72, 0));
-    polygonPoints.push_back(vtkVector3d(3.56, 19.92, 0));
-    polygonPoints.push_back(vtkVector3d(9.46, 17.52, 0));
-    polygonPoints.push_back(vtkVector3d(20.71, 19.52, 0));
-    polygonPoints.push_back(vtkVector3d(18.61, 15.27, 0));
-    polygonPoints.push_back(vtkVector3d(21.86, 9.52, 0));
-    polygonPoints.push_back(vtkVector3d(11.21, 11.27, 0));
-
-    std::vector<vtkVector3d> hole0;
-    hole0.push_back(vtkVector3d(5.31, 12.67, 0));
-    hole0.push_back(vtkVector3d(7.91, 12.77, 0));
-    hole0.push_back(vtkVector3d(7.96, 14.92, 0));
-    hole0.push_back(vtkVector3d(5.46, 15.07, 0));
-
-    std::vector<vtkVector3d> hole1;
-    hole1.push_back(vtkVector3d(12.31, 13.42, 0));
-    hole1.push_back(vtkVector3d(14.76, 12.92, 0));
-    hole1.push_back(vtkVector3d(16.91, 13.62, 0));
-    hole1.push_back(vtkVector3d(16.11, 16.42, 0));
-    hole1.push_back(vtkVector3d(12.61, 16.32, 0));
-
-    holes.push_back(hole0);
-    holes.push_back(hole1);
 
     double polygonNormal[3];
     Utility::ComputePolygonNormal(polygonPoints, polygonNormal);
 
     auto start = std::chrono::high_resolution_clock::now();
 
-    std::unique_ptr<UniformPolygonTriangulation> triangulation(new UniformPolygonTriangulation());
-    triangulation->mDebug = debug;
-    triangulation->SetPolygonPoints(polygonPoints);
-    triangulation->SetHoles(holes);
-    triangulation->SetNormal(vtkVector3d(polygonNormal));
-    triangulation->Triangulate();
+    UniformPolygonTriangulation triangulation;
+    triangulation.mDebug = debug;
+    triangulation.SetPolygonPoints(polygonPoints);
+    triangulation.SetHoles(holes);
+    triangulation.SetNormal(vtkVector3d(polygonNormal));
+    triangulation.Triangulate();
 
     auto stop = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
@@ -101,18 +74,18 @@ void TestScanLineTriangulation(bool debug = false)
             }
         }
 
-        auto axisX = triangulation->GetAxisX();
-        auto axisY = triangulation->GetAxisY();
+        auto axisX = triangulation.GetAxisX();
+        auto axisY = triangulation.GetAxisY();
 
         if (debug)
         {
             //bounding box
             {
-                auto upperLeftCorner = triangulation->GetUpperLeftCorner();
+                auto upperLeftCorner = triangulation.GetUpperLeftCorner();
                 TestUtil::AddPoint(upperLeftCorner, 8, colors->GetColor3d("Yellow").GetData(), actors);
 
-                auto width = triangulation->GetBoundingBoxWidth();
-                auto height = triangulation->GetBoundingBoxHeight();
+                auto width = triangulation.GetBoundingBoxWidth();
+                auto height = triangulation.GetBoundingBoxHeight();
 
                 auto lowerRightCorner = upperLeftCorner + axisX * width - axisY * height;
                 auto color = colors->GetColor3d("DarkSlateGray").GetData();
@@ -125,7 +98,7 @@ void TestScanLineTriangulation(bool debug = false)
 
             //axes
             {
-                auto planeCenter = triangulation->GetPlaneCenter();
+                auto planeCenter = triangulation.GetPlaneCenter();
                 const double length = 30;
                 TestUtil::AddVector(planeCenter, planeCenter + axisX * length, 4, colors->GetColor3d("Red").GetData(), actors);
                 TestUtil::AddVector(planeCenter, planeCenter + axisY * length, 4, colors->GetColor3d("Green").GetData(), actors);
@@ -134,10 +107,10 @@ void TestScanLineTriangulation(bool debug = false)
         }
 
         //result
-        if (!triangulation->mDebug)
+        if (!triangulation.mDebug)
         {
             auto offset = axisX * ((polygonPolyData->GetBounds()[1] - polygonPolyData->GetBounds()[0]) + 10);
-            auto triangulatedPolygon = triangulation->GetTriangulatedPolygon();
+            auto triangulatedPolygon = triangulation.GetTriangulatedPolygon();
             auto polydataActor = Utility::GetPolyDataActor(triangulatedPolygon, colors->GetColor3d("DarkOliveGreen").GetData());
             polydataActor->SetPosition(offset.GetData());
             polydataActor->GetProperty()->SetRepresentationToWireframe();
@@ -166,5 +139,52 @@ void TestScanLineTriangulation(bool debug = false)
 int main(int argc, char* argv[])
 {
     bool debug = false;
-    TestScanLineTriangulation(debug);
+
+    std::vector<vtkVector3d> polygonPoints;
+    std::vector<std::vector<vtkVector3d>> holes;
+
+    if (argc == 0)
+    {
+        //predefined data
+        polygonPoints.push_back(vtkVector3d(2.51, 8.32, 0));
+        polygonPoints.push_back(vtkVector3d(1.86, 13.72, 0));
+        polygonPoints.push_back(vtkVector3d(3.56, 19.92, 0));
+        polygonPoints.push_back(vtkVector3d(9.46, 17.52, 0));
+        polygonPoints.push_back(vtkVector3d(20.71, 19.52, 0));
+        polygonPoints.push_back(vtkVector3d(18.61, 15.27, 0));
+        polygonPoints.push_back(vtkVector3d(21.86, 9.52, 0));
+        polygonPoints.push_back(vtkVector3d(11.21, 11.27, 0));
+
+        std::vector<vtkVector3d> hole0;
+        hole0.push_back(vtkVector3d(5.31, 12.67, 0));
+        hole0.push_back(vtkVector3d(7.91, 12.77, 0));
+        hole0.push_back(vtkVector3d(7.96, 14.92, 0));
+        hole0.push_back(vtkVector3d(5.46, 15.07, 0));
+
+        std::vector<vtkVector3d> hole1;
+        hole1.push_back(vtkVector3d(12.31, 13.42, 0));
+        hole1.push_back(vtkVector3d(14.76, 12.92, 0));
+        hole1.push_back(vtkVector3d(16.91, 13.62, 0));
+        hole1.push_back(vtkVector3d(16.11, 16.42, 0));
+        hole1.push_back(vtkVector3d(12.61, 16.32, 0));
+
+        holes.push_back(hole0);
+        holes.push_back(hole1);
+    }
+    else
+    {
+        printf("polygon file: %s\n", argv[1]);
+        polygonPoints = Utility::ReadFromFile(argv[1]);
+
+        if (argc > 2)
+        {
+            for (int i = 2; i < argc; ++i)
+            {
+                printf("hole%i file: %s\n", i - 2, argv[i]);
+                holes.push_back(Utility::ReadFromFile(argv[i]));
+            }
+        }
+    }
+
+    TestScanLineTriangulation(polygonPoints, holes, debug);
 }
