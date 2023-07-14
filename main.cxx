@@ -143,7 +143,7 @@ int main(int argc, char* argv[])
     std::vector<vtkVector3d> polygonPoints;
     std::vector<std::vector<vtkVector3d>> holes;
 
-    if (argc == 0)
+    if (argc < 2)
     {
         //predefined data
         polygonPoints.push_back(vtkVector3d(2.51, 8.32, 0));
