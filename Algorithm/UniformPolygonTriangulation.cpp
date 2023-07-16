@@ -30,8 +30,10 @@ namespace Algorithm
         return squarePolyData;
     }
 
-    std::vector<std::vector<vtkVector3d>> GetSquarePolygonIntersectionPolygon(const std::vector<vtkVector3d>& squarePoints, const std::vector<vtkVector3d>& polygonPoints,
-                                        const std::vector<std::vector<vtkVector3d>>& innerHoles, const vtkVector3d& planeCenter, const vtkVector3d& axisX, const vtkVector3d& axisY)
+    std::vector<std::vector<vtkVector3d>>
+    GetSquarePolygonIntersectionPolygon(const std::vector<vtkVector3d>& squarePoints, const std::vector<vtkVector3d>& polygonPoints,
+                                        const std::vector<std::vector<vtkVector3d>>& innerHoles, const vtkVector3d& planeCenter, const vtkVector3d& axisX,
+                                        const vtkVector3d& axisY)
     {
         SquarePolygonIntersection polygonIntersection;
         polygonIntersection.SetPolygonPoints(polygonPoints);
@@ -343,33 +345,8 @@ namespace Algorithm
         return mTriangulatedPolygon;
     }
 
-    vtkVector3d UniformPolygonTriangulation::GetPlaneCenter() const
-    {
-        return mPlaneCenter;
-    }
-
     vtkVector3d UniformPolygonTriangulation::GetAxisX() const
     {
         return mAxisX;
-    }
-
-    vtkVector3d UniformPolygonTriangulation::GetAxisY() const
-    {
-        return mAxisY;
-    }
-
-    vtkVector3d UniformPolygonTriangulation::GetUpperLeftCorner() const
-    {
-        return mUpperLeftCorner;
-    }
-
-    double UniformPolygonTriangulation::GetBoundingBoxWidth() const
-    {
-        return mBoundingBoxWidth;
-    }
-
-    double UniformPolygonTriangulation::GetBoundingBoxHeight() const
-    {
-        return mBoundingBoxHeight;
     }
 }
