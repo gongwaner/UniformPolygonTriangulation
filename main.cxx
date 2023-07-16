@@ -21,7 +21,7 @@
 #include <chrono>
 
 
-void TestScanLineTriangulation(const std::vector<vtkVector3d>& polygonPoints, const std::vector<std::vector<vtkVector3d>>& holes, bool debug = false)
+void TestUniformTriangulation(const std::vector<vtkVector3d>& polygonPoints, const std::vector<std::vector<vtkVector3d>>& holes, bool debug = false)
 {
     using namespace Algorithm;
 
@@ -74,47 +74,15 @@ void TestScanLineTriangulation(const std::vector<vtkVector3d>& polygonPoints, co
             }
         }
 
-        auto axisX = triangulation.GetAxisX();
-        auto axisY = triangulation.GetAxisY();
-
-        if (debug)
+        //triangulation result
         {
-            //bounding box
-            {
-                auto upperLeftCorner = triangulation.GetUpperLeftCorner();
-                TestUtil::AddPoint(upperLeftCorner, 8, colors->GetColor3d("Yellow").GetData(), actors);
-
-                auto width = triangulation.GetBoundingBoxWidth();
-                auto height = triangulation.GetBoundingBoxHeight();
-
-                auto lowerRightCorner = upperLeftCorner + axisX * width - axisY * height;
-                auto color = colors->GetColor3d("DarkSlateGray").GetData();
-                int lineWidth = 5;
-                TestUtil::AddVector(upperLeftCorner, upperLeftCorner + axisX * width, lineWidth, color, actors);
-                TestUtil::AddVector(upperLeftCorner, upperLeftCorner - axisY * height, lineWidth, color, actors);
-                TestUtil::AddVector(lowerRightCorner, lowerRightCorner - axisX * width, lineWidth, color, actors);
-                TestUtil::AddVector(lowerRightCorner, lowerRightCorner + axisY * height, lineWidth, color, actors);
-            }
-
-            //axes
-            {
-                auto planeCenter = triangulation.GetPlaneCenter();
-                const double length = 30;
-                TestUtil::AddVector(planeCenter, planeCenter + axisX * length, 4, colors->GetColor3d("Red").GetData(), actors);
-                TestUtil::AddVector(planeCenter, planeCenter + axisY * length, 4, colors->GetColor3d("Green").GetData(), actors);
-                TestUtil::AddVector(planeCenter, planeCenter + vtkVector3d(polygonNormal) * length, 4, colors->GetColor3d("Blue").GetData(), actors);
-            }
-        }
-
-        //result
-        if (!triangulation.mDebug)
-        {
+            auto axisX = triangulation.GetAxisX();
             auto offset = axisX * ((polygonPolyData->GetBounds()[1] - polygonPolyData->GetBounds()[0]) + 10);
             auto triangulatedPolygon = triangulation.GetTriangulatedPolygon();
-            auto polydataActor = Utility::GetPolyDataActor(triangulatedPolygon, colors->GetColor3d("DarkOliveGreen").GetData());
-            polydataActor->SetPosition(offset.GetData());
-            polydataActor->GetProperty()->SetRepresentationToWireframe();
-            actors.push_back(polydataActor);
+            auto polyDataActor = Utility::GetPolyDataActor(triangulatedPolygon, colors->GetColor3d("DarkOliveGreen").GetData());
+            polyDataActor->SetPosition(offset.GetData());
+            polyDataActor->GetProperty()->SetRepresentationToWireframe();
+            actors.push_back(polyDataActor);
         }
     }
 
@@ -186,5 +154,5 @@ int main(int argc, char* argv[])
         }
     }
 
-    TestScanLineTriangulation(polygonPoints, holes, debug);
+    TestUniformTriangulation(polygonPoints, holes, debug);
 }

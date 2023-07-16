@@ -38,15 +38,9 @@ namespace Algorithm
         void SetSquareSize(const double size);
         void Triangulate();
         vtkSmartPointer<vtkPolyData> GetTriangulatedPolygon() const;
-
-        //debug
-        bool mDebug = false;
-        vtkVector3d GetPlaneCenter() const;
         vtkVector3d GetAxisX() const;
-        vtkVector3d GetAxisY() const;
-        vtkVector3d GetUpperLeftCorner() const;
-        double GetBoundingBoxWidth() const;
-        double GetBoundingBoxHeight() const;
+
+        bool mDebug = false;
 
 
     private:
