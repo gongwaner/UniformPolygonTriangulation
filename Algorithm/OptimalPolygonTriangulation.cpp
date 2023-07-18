@@ -105,7 +105,7 @@ namespace Algorithm
      * for convex polygon the diagonal is valid as long as i,j has interval >= 2
      * for concave polygon the diagonal should be inside polygon
      */
-    bool OptimalPolygonTriangulation::IsValidDiagonal(int i, int j) const
+    bool OptimalPolygonTriangulation::IsValidDiagonal(int i, int j, const double epsilon) const
     {
         if (abs(i - j) < 2)
             return false;
@@ -143,10 +143,12 @@ namespace Algorithm
         crossProducts[2] = v3.Cross(v2).Dot(mNormal); // V3xV2
 
         //angle between v1 and v2 (in counter-clockwise direction) is <= 180
-        if ((crossProducts[0] >= 0) && (crossProducts[1] >= 0) && (crossProducts[2] >= 0))
+        if ((crossProducts[0] > 0 || abs(crossProducts[0]) < epsilon) && (crossProducts[1] > 0 || abs(crossProducts[1]) < epsilon) &&
+            (crossProducts[2] > 0 || abs(crossProducts[2]) < epsilon))
             return true;
-        //angle between v1 and v2 (in counter-clockwise direction) is > 180
-        else if ((crossProducts[0] < 0) && ((crossProducts[1] >= 0) || (crossProducts[2] >= 0)))
+            //angle between v1 and v2 (in counter-clockwise direction) is > 180
+        else if ((crossProducts[0] < 0) &&
+                 ((crossProducts[1] > 0 || abs(crossProducts[1]) < epsilon) || (crossProducts[2] > 0 || abs(crossProducts[2]) < epsilon)))
             return true;
 
         return false;
