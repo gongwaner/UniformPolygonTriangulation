@@ -8,6 +8,7 @@
 #include <vtkPolygon.h>
 #include <vtkVectorOperators.h>
 #include <vtkTriangle.h>
+#include <vtkCleanPolyData.h>
 
 
 namespace Algorithm
@@ -337,7 +338,21 @@ namespace Algorithm
             }
         }
 
-        mTriangulatedPolygon = Utility::GetCombinedPolyData(subTriangulationVector);
+        auto combinedPolyData = Utility::GetCombinedPolyData(subTriangulationVector);
+
+        //merge duplicate points
+        auto cleanPolyData = vtkSmartPointer<vtkCleanPolyData>::New();
+        cleanPolyData->SetInputData(combinedPolyData);
+        cleanPolyData->ConvertPolysToLinesOff();
+        cleanPolyData->Update();
+        mTriangulatedPolygon = cleanPolyData->GetOutput();
+
+        if (mDebug)
+        {
+            printf("combined poly data points cnt=%lli, cells cnt = %lli\nAfter cleanup, points cnt=%lli, cells cnt = %lli\n",
+                   combinedPolyData->GetNumberOfPoints(), combinedPolyData->GetNumberOfCells(), mTriangulatedPolygon->GetNumberOfPoints(),
+                   mTriangulatedPolygon->GetNumberOfCells());
+        }
     }
 
     vtkSmartPointer<vtkPolyData> UniformPolygonTriangulation::GetTriangulatedPolygon() const
