@@ -8,11 +8,6 @@
 
 namespace Algorithm
 {
-    OptimalPolygonTriangulation::OptimalPolygonTriangulation()
-    {
-        mNewTriangles = vtkSmartPointer<vtkCellArray>::New();
-    }
-
     void OptimalPolygonTriangulation::SetPolygonPoints(const std::vector<vtkVector3d>& polygonPoints)
     {
         mPolygonPoints = polygonPoints;
@@ -310,6 +305,8 @@ namespace Algorithm
 
     void OptimalPolygonTriangulation::Triangulate()
     {
+        mNewTriangles = vtkSmartPointer<vtkCellArray>::New();
+
         if (mPolygonPoints.size() < 3)
             return;
 

@@ -32,7 +32,7 @@ namespace Algorithm
     class OptimalPolygonTriangulation
     {
     public:
-        OptimalPolygonTriangulation();
+        OptimalPolygonTriangulation() = default;
         ~OptimalPolygonTriangulation() = default;
         void SetPolygonPoints(const std::vector<vtkVector3d>& polygonPoints);
         void SetNormal(const vtkVector3d& normal);
