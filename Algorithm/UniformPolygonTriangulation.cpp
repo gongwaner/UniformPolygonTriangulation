@@ -31,21 +31,6 @@ namespace Algorithm
         return squarePolyData;
     }
 
-    std::vector<std::vector<vtkVector3d>>
-    GetSquarePolygonIntersectionPolygon(const std::vector<vtkVector3d>& squarePoints, const std::vector<vtkVector3d>& polygonPoints,
-                                        const std::vector<std::vector<vtkVector3d>>& innerHoles, const vtkVector3d& planeCenter, const vtkVector3d& axisX,
-                                        const vtkVector3d& axisY)
-    {
-        SquarePolygonIntersection polygonIntersection;
-        polygonIntersection.SetPolygonPoints(polygonPoints);
-        polygonIntersection.SetHoles(innerHoles);
-        polygonIntersection.SetSquarePoints(squarePoints);
-        polygonIntersection.SetPlane(planeCenter, axisX, axisY);
-        polygonIntersection.CalculateIntersectionPolygons();
-
-        return polygonIntersection.GetIntersectedPolygon();
-    }
-
     double WeightOfTriangle(const vtkVector3d& p0, const vtkVector3d& p1, const vtkVector3d& p2)
     {
         std::vector<double> edgeLengths;
@@ -276,6 +261,13 @@ namespace Algorithm
         if (vtkVector3d(squareNormal).Dot(mNormal) < 0)
             std::reverse(startSquarePoints.begin(), startSquarePoints.end());
 
+        //setup subpolygon calculation. polygon and holes only need to be passed once
+        SquarePolygonIntersection polygonIntersection;
+        polygonIntersection.mDebug = mDebug;
+        polygonIntersection.SetPolygonPoints(mPolygonPoints);
+        polygonIntersection.SetHoles(mInnerHoles);
+        polygonIntersection.SetPlane(mPlaneCenter, mAxisX, mAxisY);
+
         //iterate through each pixel
         std::vector<vtkVector3d> squarePoints(squarePntsCnt);
         std::vector<vtkSmartPointer<vtkPolyData>> subTriangulationVector;
@@ -315,7 +307,10 @@ namespace Algorithm
                 }
 
                 //calculate intersected polygon and triangulate
-                auto subPolygons = GetSquarePolygonIntersectionPolygon(squarePoints, mPolygonPoints, mInnerHoles, mPlaneCenter, mAxisX, mAxisY);
+                polygonIntersection.SetSquarePoints(squarePoints);
+                polygonIntersection.CalculateIntersectedPolygons();
+                auto subPolygons = polygonIntersection.GetIntersectedPolygon();
+
                 if (subPolygons.empty() && allSquarePointsInPolygon)
                 {
                     if (mDebug)

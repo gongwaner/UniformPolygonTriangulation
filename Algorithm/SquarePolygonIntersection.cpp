@@ -1,10 +1,8 @@
 #include "SquarePolygonIntersection.h"
 #include "../Utility/PolygonUtil.h"
-#include "../Utility/MeshUtil.h"
 
 #include <vtkBoundingBox.h>
 #include <vtkVectorOperators.h>
-#include <vtkPolygon.h>
 
 #include <queue>
 
@@ -13,7 +11,8 @@ namespace Algorithm
 {
     const int INVALID_POLYGON_INDEX = -1;
 
-    template<typename T, typename F> std::vector<size_t> SortIndices(const std::vector<T>& v, F comparator)
+    template<typename T, typename F>
+    std::vector<size_t> SortIndices(const std::vector<T>& v, F comparator)
     {
         // initialize original index locations
         std::vector<size_t> idx(v.size());
@@ -53,17 +52,20 @@ namespace Algorithm
 
     void SquarePolygonIntersection::SetPolygonPoints(const std::vector<vtkVector3d>& polygonPoints)
     {
-        mPolygonPoints = polygonPoints;
+        mOuterContourPoints = polygonPoints;
+        mUpdatePolygon = true;
     }
 
     void SquarePolygonIntersection::SetHoles(const std::vector<std::vector<vtkVector3d>>& holes)
     {
         mInnerHoles = holes;
+        mUpdateHoles = true;
     }
 
     void SquarePolygonIntersection::SetSquarePoints(const std::vector<vtkVector3d>& squarePoints)
     {
         mSquarePoints = squarePoints;
+        mUpdateSquare = true;
     }
 
     void SquarePolygonIntersection::SetPlane(const vtkVector3d& planeCenter, const vtkVector3d& axisX, const vtkVector3d& axisY)
@@ -71,6 +73,9 @@ namespace Algorithm
         mPlaneCenter = planeCenter;
         mAxisX = axisX;
         mAxisY = axisY;
+
+        mUpdatePolygon = true;
+        mUpdateHoles = true;
     }
 
     void SquarePolygonIntersection::SetPrecision(double epsilon)
@@ -80,26 +85,25 @@ namespace Algorithm
 
     void SquarePolygonIntersection::InitializePolygon()
     {
-        vtkBoundingBox polygonBoundingBox;
+        mUpdatePolygon = false;
+        mPolyLines.clear();
         mPolygonPointsData2d.clear();
-        int n = mPolygonPoints.size();
+
+        int n = mOuterContourPoints.size();
 
         for (int i = 0; i < n; ++i)
         {
             //projection along local axes
-            auto cp = mPolygonPoints[i] - mPlaneCenter;
+            auto cp = mOuterContourPoints[i] - mPlaneCenter;
             auto xProj = cp.Dot(mAxisX);
             auto yProj = cp.Dot(mAxisY);
 
-            polygonBoundingBox.AddPoint(xProj, yProj, 0);
             mPolygonPointsData2d.push_back(xProj);
             mPolygonPointsData2d.push_back(yProj);
             mPolygonPointsData2d.push_back(0);
 
             mPolyLines.push_back(std::pair(i, (i + 1) % n));
         }
-
-        polygonBoundingBox.GetBounds(mPolygonBounds);//bounds of AABB
     }
 
     void SquarePolygonIntersection::InitializeHoles()
@@ -107,8 +111,12 @@ namespace Algorithm
         if (mInnerHoles.empty())
             return;
 
+        mUpdateHoles = false;
+        mComponentEndIndices.clear();
+        mComponentIntervals.clear();
+
         int intervalStart = 0;
-        int holeStartIndex = mPolygonPoints.size();
+        int holeStartIndex = mContourPoints.size();
         mComponentEndIndices.insert(holeStartIndex - 1);
         mComponentIntervals.push_back(std::pair(intervalStart, holeStartIndex - 1));
         intervalStart = holeStartIndex;
@@ -117,7 +125,7 @@ namespace Algorithm
         {
             for (const auto& point: hole)
             {
-                mPolygonPoints.push_back(point);
+                mContourPoints.push_back(point);
 
                 //projection along local axes
                 auto cp = point - mPlaneCenter;
@@ -147,6 +155,7 @@ namespace Algorithm
 
     void SquarePolygonIntersection::InitializeSquare()
     {
+        mUpdateSquare = false;
         mSquarePointsData2d.clear();
 
         double minXProj = DBL_MAX;
@@ -184,18 +193,6 @@ namespace Algorithm
         mSquareBounds[3] = maxYProj;
     }
 
-    bool SquarePolygonIntersection::PointInPolygon(const vtkVector3d& point)
-    {
-        //projection along local axes
-        auto cp = point - mPlaneCenter;
-        auto xProj = cp.Dot(mAxisX);
-        auto yProj = cp.Dot(mAxisY);
-
-        double pointToQuery[3]{xProj, yProj, 0};
-        double normal2d[3]{0, 0, 1};
-        return vtkPolygon::PointInPolygon(pointToQuery, mPolygonPoints.size(), mPolygonPointsData2d.data(), mPolygonBounds, normal2d);
-    }
-
     bool SquarePolygonIntersection::PointInSquare(const vtkVector3d& point) const
     {
         auto cp = (point - mPlaneCenter);
@@ -204,8 +201,7 @@ namespace Algorithm
 
         return (xProj > mSquareBounds[0] || abs(xProj - mSquareBounds[0]) < mEpsilon) &&
                (xProj < mSquareBounds[1] || abs(xProj - mSquareBounds[1]) < mEpsilon) &&
-               (yProj > mSquareBounds[2] || abs(yProj - mSquareBounds[2]) < mEpsilon) &&
-               (yProj < mSquareBounds[3] || abs(yProj - mSquareBounds[3]) < mEpsilon);
+               (yProj > mSquareBounds[2] || abs(yProj - mSquareBounds[2]) < mEpsilon) && (yProj < mSquareBounds[3] || abs(yProj - mSquareBounds[3]) < mEpsilon);
     }
 
     bool SquarePolygonIntersection::LineIntersects(int squareLineID, const std::pair<int, int>& polyLine, vtkVector3d& intersectionPoint) const
@@ -231,8 +227,7 @@ namespace Algorithm
         {
             //intersection points can't be duplicate of square/polygon points
             if (Utility::EpsilonEqual(intersectionPoint2d, squareStartPoint, mEpsilon) ||
-                Utility::EpsilonEqual(intersectionPoint2d, squareEndPoint, mEpsilon) ||
-                Utility::EpsilonEqual(intersectionPoint2d, polyStartPoint, mEpsilon) ||
+                Utility::EpsilonEqual(intersectionPoint2d, squareEndPoint, mEpsilon) || Utility::EpsilonEqual(intersectionPoint2d, polyStartPoint, mEpsilon) ||
                 Utility::EpsilonEqual(intersectionPoint2d, polyEndPoint, mEpsilon))
             {
                 return false;
@@ -248,19 +243,7 @@ namespace Algorithm
 
     bool SquarePolygonIntersection::HasIntersection()
     {
-        //check if polygon points are within square
-        std::vector<bool> isInsideSquare(mPolygonPoints.size());
-        for (int i = 0; i < mPolygonPoints.size(); ++i)
-        {
-            isInsideSquare[i] = PointInSquare(mPolygonPoints[i]);
-        }
-
-        //check if square points are within polygon
-        std::vector<bool> isInsidePolygon(mSquarePoints.size());
-        for (int i = 0; i < mSquarePoints.size(); ++i)
-        {
-            isInsidePolygon[i] = PointInPolygon(mSquarePoints[i]);
-        }
+        mIntersectionPointsSet.clear();
 
         //calculate intersection
         std::unordered_map<int, std::vector<vtkVector3d>> polygonMap;
@@ -330,7 +313,7 @@ namespace Algorithm
     int SquarePolygonIntersection::GetNextPolygonIndex(int index) const
     {
         if (mInnerHoles.empty())
-            return (index + 1) % mPolygonPoints.size();
+            return (index + 1) % mOuterContourPoints.size();
 
         for (const auto& range: mComponentIntervals)
         {
@@ -343,6 +326,11 @@ namespace Algorithm
 
     void SquarePolygonIntersection::SetUpPolygonIntersection(const std::unordered_map<int, std::vector<vtkVector3d>>& polygonMap)
     {
+        mPolygonVertices.clear();
+        mEnterIndices.clear();
+        mIsExitPoint.clear();
+        mIntersectionIntervals.clear();
+
         bool hasHoles = !mInnerHoles.empty();
         if (mDebug && hasHoles)
         {
@@ -352,16 +340,14 @@ namespace Algorithm
             std::cout << std::endl;
         }
 
-        auto squareCenter = Utility::GetAverageCenter(mSquarePoints);
-
         //store the indices of enter event points, and store whether a point is an exit event
-        mIsExitPoint.reserve(mPolygonPoints.size() + mIntersectionPointsSet.size());
+        mIsExitPoint.reserve(mContourPoints.size() + mIntersectionPointsSet.size());
         int index = 0;
         int intervalStart = 0;
 
-        for (int i = 0; i < mPolygonPoints.size(); ++i)
+        for (int i = 0; i < mContourPoints.size(); ++i)
         {
-            auto start = mPolygonPoints[i];
+            auto start = mContourPoints[i];
             mPolygonVertices.push_back(start);
             mIsExitPoint.push_back(false);//polygon points will never be exit event point
             index++;
@@ -372,7 +358,7 @@ namespace Algorithm
             {
                 auto intersectionPoints = polygonMap.at(i);
                 int endIndex = GetNextPolygonIndex(i);
-                auto end = mPolygonPoints[endIndex];
+                auto end = mContourPoints[endIndex];
 
                 if (intersectionPoints.size() == 1)
                 {
@@ -436,6 +422,8 @@ namespace Algorithm
 
     void SquarePolygonIntersection::SetUpSquareIntersection(const std::unordered_map<int, std::vector<vtkVector3d>>& squareMap)
     {
+        mSquareVertices.clear();
+
         for (int i = 0; i < mSquarePoints.size(); ++i)
         {
             auto start = mSquarePoints[i];
@@ -465,13 +453,20 @@ namespace Algorithm
         return INVALID_POLYGON_INDEX;
     }
 
-    void SquarePolygonIntersection::CalculateIntersectionPolygons()
+    void SquarePolygonIntersection::CalculateIntersectedPolygons()
     {
-        bool hasHoles = !mInnerHoles.empty();
+        mSubPolygons.clear();
 
-        InitializePolygon();
-        InitializeSquare();
-        if (hasHoles)
+        if (mUpdatePolygon || mUpdateHoles)
+            mContourPoints = mOuterContourPoints;
+
+        if (mUpdatePolygon)
+            InitializePolygon();
+
+        if (mUpdateSquare)
+            InitializeSquare();
+
+        if (!mInnerHoles.empty() && mUpdateHoles)
             InitializeHoles();
 
         if (!HasIntersection())
@@ -479,7 +474,7 @@ namespace Algorithm
 
         if (mDebug)
         {
-            std::cout << "polygon points count: " << mPolygonPoints.size() << ", intersection points count: " << mIntersectionPointsSet.size() << std::endl;
+            std::cout << "polygon points count: " << mContourPoints.size() << ", intersection points count: " << mIntersectionPointsSet.size() << std::endl;
             std::cout << "enter indices: ";
             for (auto index: mEnterIndices)
                 std::cout << index << " ";

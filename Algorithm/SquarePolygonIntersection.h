@@ -22,7 +22,7 @@ namespace Algorithm
         void SetSquarePoints(const std::vector<vtkVector3d>& squarePoints);
         void SetPlane(const vtkVector3d& planeCenter, const vtkVector3d& axisX, const vtkVector3d& axisY);
         void SetPrecision(double epsilon);
-        void CalculateIntersectionPolygons();
+        void CalculateIntersectedPolygons();
         std::vector<std::vector<vtkVector3d>> GetIntersectedPolygon() const;
         bool mDebug = false;
 
@@ -30,7 +30,6 @@ namespace Algorithm
         void InitializePolygon();
         void InitializeHoles();
         void InitializeSquare();
-        bool PointInPolygon(const vtkVector3d& point);
         bool PointInSquare(const vtkVector3d& point) const;
         bool LineIntersects(int squareLineID, const std::pair<int, int>& polyLine, vtkVector3d& intersectionPoint) const;
         bool HasIntersection();
@@ -39,20 +38,19 @@ namespace Algorithm
         int GetNextPolygonIndex(int index) const;
         int GetNextIntersectionPolygonIndex(int index) const;
 
-        std::vector<vtkVector3d> mPolygonPoints;
+        std::vector<vtkVector3d> mOuterContourPoints;
+        std::vector<vtkVector3d> mContourPoints;
         std::vector<std::vector<vtkVector3d>> mInnerHoles;
         std::vector<std::pair<int, int>> mPolyLines;
         std::vector<vtkVector3d> mSquarePoints;
+        std::vector<double> mPolygonPointsData2d;
 
         //plane
         vtkVector3d mPlaneCenter;
         vtkVector3d mAxisX;
         vtkVector3d mAxisY;
 
-        //bounds calculation
-        std::vector<double> mPolygonPointsData2d;
-        double mPolygonBounds[6];
-
+        //square bounds calculation
         std::vector<double> mSquarePointsData2d;
         double mSquareBounds[4];
 
@@ -68,6 +66,10 @@ namespace Algorithm
         std::vector<std::vector<vtkVector3d>> mSubPolygons;
 
         double mEpsilon = 1e-6;
+
+        bool mUpdatePolygon = true;
+        bool mUpdateSquare = true;
+        bool mUpdateHoles = true;
     };
 }
 

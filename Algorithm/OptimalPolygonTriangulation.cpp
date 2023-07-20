@@ -91,7 +91,6 @@ namespace Algorithm
             }
         }
 
-        mNewTriangles = vtkSmartPointer<vtkCellArray>::New();
         AddNewTriangles(table, 0, n - 1);
     }
 
@@ -287,7 +286,6 @@ namespace Algorithm
             }
         }
 
-        mNewTriangles = vtkSmartPointer<vtkCellArray>::New();
         AddNewTriangles(table, 0, n - 1);
     }
 
