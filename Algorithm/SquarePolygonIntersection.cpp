@@ -87,7 +87,7 @@ namespace Algorithm
     {
         mUpdatePolygon = false;
         mOuterPolyLines.clear();
-        mPolygonPointsData2d.clear();
+        mOuterPolygonPointsData2d.clear();
 
         int n = mOuterContourPoints.size();
 
@@ -98,9 +98,8 @@ namespace Algorithm
             auto xProj = cp.Dot(mAxisX);
             auto yProj = cp.Dot(mAxisY);
 
-            mPolygonPointsData2d.push_back(xProj);
-            mPolygonPointsData2d.push_back(yProj);
-            mPolygonPointsData2d.push_back(0);
+            mOuterPolygonPointsData2d.push_back(xProj);
+            mOuterPolygonPointsData2d.push_back(yProj);
 
             mOuterPolyLines.push_back(std::pair(i, (i + 1) % n));
         }
@@ -132,9 +131,8 @@ namespace Algorithm
                 auto xProj = cp.Dot(mAxisX);
                 auto yProj = cp.Dot(mAxisY);
 
-                mPolygonPointsData2d.push_back(xProj);
-                mPolygonPointsData2d.push_back(yProj);
-                mPolygonPointsData2d.push_back(0);
+                mContourPointsData2d.push_back(xProj);
+                mContourPointsData2d.push_back(yProj);
             }
 
             int holePointsCnt = hole.size();
@@ -143,7 +141,7 @@ namespace Algorithm
                 int nextIndex = i + 1 < holeStartIndex + holePointsCnt ? i + 1 : i + 1 - holePointsCnt;
                 mContourPolyLines.push_back(std::pair(i, nextIndex));
                 if (mDebug)
-                    std::cout << "push (" << i << "," << nextIndex << ")" << std::endl;
+                    printf("mContourPolyLines add(%i,%i)\n", i, nextIndex);
             }
 
             holeStartIndex += holePointsCnt;
@@ -172,7 +170,6 @@ namespace Algorithm
 
             mSquarePointsData2d.push_back(xProj);
             mSquarePointsData2d.push_back(yProj);
-            mSquarePointsData2d.push_back(0);
 
             if (xProj > maxXProj)
                 maxXProj = xProj;
@@ -201,24 +198,21 @@ namespace Algorithm
 
         return (xProj > mSquareBounds[0] || abs(xProj - mSquareBounds[0]) < mEpsilon) &&
                (xProj < mSquareBounds[1] || abs(xProj - mSquareBounds[1]) < mEpsilon) &&
-               (yProj > mSquareBounds[2] || abs(yProj - mSquareBounds[2]) < mEpsilon) && (yProj < mSquareBounds[3] || abs(yProj - mSquareBounds[3]) < mEpsilon);
+               (yProj > mSquareBounds[2] || abs(yProj - mSquareBounds[2]) < mEpsilon) &&
+               (yProj < mSquareBounds[3] || abs(yProj - mSquareBounds[3]) < mEpsilon);
     }
 
     bool SquarePolygonIntersection::LineIntersects(int squareLineID, const std::pair<int, int>& polyLine, vtkVector3d& intersectionPoint) const
     {
         int squareStartIndex = squareLineID;
         int squareEndIndex = (squareLineID + 1) % mSquarePoints.size();
-        vtkVector3d squareStartPoint(mSquarePointsData2d[squareStartIndex * 3], mSquarePointsData2d[squareStartIndex * 3 + 1],
-                                     mSquarePointsData2d[squareStartIndex * 3 + 2]);
-        vtkVector3d squareEndPoint(mSquarePointsData2d[squareEndIndex * 3], mSquarePointsData2d[squareEndIndex * 3 + 1],
-                                   mSquarePointsData2d[squareEndIndex * 3 + 2]);
+        vtkVector3d squareStartPoint(mSquarePointsData2d[squareStartIndex * 2], mSquarePointsData2d[squareStartIndex * 2 + 1], 0);
+        vtkVector3d squareEndPoint(mSquarePointsData2d[squareEndIndex * 2], mSquarePointsData2d[squareEndIndex * 2 + 1], 0);
 
         int polyStartIndex = polyLine.first;
         int polyEndIndex = polyLine.second;
-        vtkVector3d polyStartPoint(mPolygonPointsData2d[polyStartIndex * 3], mPolygonPointsData2d[polyStartIndex * 3 + 1],
-                                   mPolygonPointsData2d[polyStartIndex * 3 + 2]);
-        vtkVector3d polyEndPoint(mPolygonPointsData2d[polyEndIndex * 3], mPolygonPointsData2d[polyEndIndex * 3 + 1],
-                                 mPolygonPointsData2d[polyEndIndex * 3 + 2]);
+        vtkVector3d polyStartPoint(mContourPointsData2d[polyStartIndex * 2], mContourPointsData2d[polyStartIndex * 2 + 1], 0);
+        vtkVector3d polyEndPoint(mContourPointsData2d[polyEndIndex * 2], mContourPointsData2d[polyEndIndex * 2 + 1], 0);
 
         vtkVector3d intersectionPoint2d;
         bool intersects = Utility::GetLineIntersection(squareStartPoint, squareEndPoint, polyStartPoint, polyEndPoint, intersectionPoint2d);
@@ -227,7 +221,8 @@ namespace Algorithm
         {
             //intersection points can't be duplicate of square/polygon points
             if (Utility::EpsilonEqual(intersectionPoint2d, squareStartPoint, mEpsilon) ||
-                Utility::EpsilonEqual(intersectionPoint2d, squareEndPoint, mEpsilon) || Utility::EpsilonEqual(intersectionPoint2d, polyStartPoint, mEpsilon) ||
+                Utility::EpsilonEqual(intersectionPoint2d, squareEndPoint, mEpsilon) ||
+                Utility::EpsilonEqual(intersectionPoint2d, polyStartPoint, mEpsilon) ||
                 Utility::EpsilonEqual(intersectionPoint2d, polyEndPoint, mEpsilon))
             {
                 return false;
@@ -370,8 +365,8 @@ namespace Algorithm
                     {
                         bool startIn = PointInSquare(start);
                         bool endIn = PointInSquare(end);
-                        std::cout << "intersection start = " << i << ", end=" << endIndex << ", startin= " << startIn << ", endin = " << endIn << ", isEnter = "
-                                  << isEnter << std::endl;
+                        printf("intersection start = %i, end = %i; startIn = %s, endIn = %s, isEnter = %s\n", i, endIndex, startIn ? "true" : "false",
+                               endIn ? "true" : "false", isEnter ? "true" : "false");
                     }
 
                     mIsExitPoint.push_back(!isEnter);
@@ -385,7 +380,7 @@ namespace Algorithm
                 else//more than 1 intersection points on one polyline
                 {
                     if (mDebug)
-                        std::cout << "there are " << intersectionPoints.size() << " intersection points on one polyline" << std::endl;
+                        printf("there are %zu intersection points on one polyline\n", intersectionPoints.size());
                     SortIntersectionPoints(intersectionPoints, start, end);
 
                     for (int k = 0; k < intersectionPoints.size(); ++k)
@@ -415,7 +410,7 @@ namespace Algorithm
             std::cout << "intersection intervals:";
             for (const auto& range: mIntersectionIntervals)
             {
-                std::cout << "[" << range.first << "," << range.second << "]" << std::endl;
+                printf("[%i,%i]\n", range.first, range.second);
             }
         }
     }
@@ -464,6 +459,7 @@ namespace Algorithm
         if (mUpdatePolygon || (hasHoles && mUpdateHoles))
         {
             mContourPoints = mOuterContourPoints;
+            mContourPointsData2d = mOuterPolygonPointsData2d;
             mContourPolyLines = mOuterPolyLines;
         }
 
@@ -478,7 +474,7 @@ namespace Algorithm
 
         if (mDebug)
         {
-            std::cout << "polygon points count: " << mContourPoints.size() << ", intersection points count: " << mIntersectionPointsSet.size() << std::endl;
+            printf("polygon points count:%zu, intersection points count:%zu\n", mContourPoints.size(), mIntersectionPointsSet.size());
             std::cout << "enter indices: ";
             for (auto index: mEnterIndices)
                 std::cout << index << " ";

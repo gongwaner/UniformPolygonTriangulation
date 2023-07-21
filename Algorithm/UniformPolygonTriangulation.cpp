@@ -225,7 +225,7 @@ namespace Algorithm
         if (hasHoles)
         {
             if (mDebug)
-                std::cout << "holes cnt: " << mInnerHoles.size() << std::endl;
+                printf("holes cnt: %zu\n", mInnerHoles.size());
             InitializeHoles();
         }
 
@@ -233,7 +233,7 @@ namespace Algorithm
             mLength = std::min(mBoundingBoxWidth, mBoundingBoxHeight) * 0.2;
 
         if (mDebug)
-            std::cout << "bounding box width = " << mBoundingBoxWidth << ", height = " << mBoundingBoxHeight << ", pixel size = " << mLength << std::endl;
+            printf("bounding box width = %f, height = %f, pixel size = %f\n", mBoundingBoxWidth, mBoundingBoxHeight, mLength);
 
         const int squarePntsCnt = 4;
 

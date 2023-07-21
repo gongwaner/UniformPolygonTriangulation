@@ -40,10 +40,11 @@ namespace Algorithm
 
         std::vector<vtkVector3d> mOuterContourPoints;
         std::vector<vtkVector3d> mContourPoints;
-        std::vector<double> mPolygonPointsData2d;
-        std::vector<std::vector<vtkVector3d>> mInnerHoles;
+        std::vector<double> mOuterPolygonPointsData2d;
+        std::vector<double> mContourPointsData2d;
         std::vector<std::pair<int, int>> mOuterPolyLines;
         std::vector<std::pair<int, int>> mContourPolyLines;
+        std::vector<std::vector<vtkVector3d>> mInnerHoles;
         std::vector<vtkVector3d> mSquarePoints;
 
         //plane
@@ -73,5 +74,3 @@ namespace Algorithm
         bool mUpdateHoles = false;
     };
 }
-
-
