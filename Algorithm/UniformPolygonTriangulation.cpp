@@ -41,17 +41,6 @@ namespace Algorithm
         return *std::max_element(edgeLengths.begin(), edgeLengths.end()) / *std::min_element(edgeLengths.begin(), edgeLengths.end());
     }
 
-    vtkSmartPointer<vtkPolyData> GetOptimalTriangulation(const std::vector<vtkVector3d>& polygonPoints, const vtkVector3d& normal)
-    {
-        OptimalPolygonTriangulation triangulation;
-        triangulation.SetPolygonPoints(polygonPoints);
-        triangulation.SetNormal(normal);
-        triangulation.SetWeightFunction(WeightOfTriangle);
-        triangulation.Triangulate();
-
-        return triangulation.GetTriangulatedPolygon();
-    }
-
     void UniformPolygonTriangulation::SetPolygonPoints(const std::vector<vtkVector3d>& polygonPoints)
     {
         mPolygonPoints = polygonPoints;
@@ -261,12 +250,17 @@ namespace Algorithm
         if (vtkVector3d(squareNormal).Dot(mNormal) < 0)
             std::reverse(startSquarePoints.begin(), startSquarePoints.end());
 
-        //setup subpolygon calculation. polygon and holes only need to be passed once
+        //setup sub-polygon calculation. polygon and holes only need to be passed once
         SquarePolygonIntersection polygonIntersection;
         polygonIntersection.mDebug = mDebug;
         polygonIntersection.SetPolygonPoints(mPolygonPoints);
         polygonIntersection.SetHoles(mInnerHoles);
         polygonIntersection.SetPlane(mPlaneCenter, mAxisX, mAxisY);
+
+        //set up optimal triangulation. weight function and normal only need to be passed once
+        OptimalPolygonTriangulation triangulation;
+        triangulation.SetNormal(mNormal);
+        triangulation.SetWeightFunction(WeightOfTriangle);
 
         //iterate through each pixel
         std::vector<vtkVector3d> squarePoints(squarePntsCnt);
@@ -326,7 +320,10 @@ namespace Algorithm
                         if (mDebug)
                             std::cout << "sub polygon points cnt = " << subPolygon.size() << std::endl;
 
-                        auto triangulatedPolygon = GetOptimalTriangulation(subPolygon, mNormal);
+                        triangulation.SetPolygonPoints(subPolygon);
+                        triangulation.Triangulate();
+
+                        auto triangulatedPolygon = triangulation.GetTriangulatedPolygon();
                         subTriangulationVector.push_back(triangulatedPolygon);
                     }
                 }
