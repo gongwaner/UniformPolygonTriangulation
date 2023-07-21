@@ -86,7 +86,7 @@ namespace Algorithm
     void SquarePolygonIntersection::InitializePolygon()
     {
         mUpdatePolygon = false;
-        mPolyLines.clear();
+        mOuterPolyLines.clear();
         mPolygonPointsData2d.clear();
 
         int n = mOuterContourPoints.size();
@@ -102,7 +102,7 @@ namespace Algorithm
             mPolygonPointsData2d.push_back(yProj);
             mPolygonPointsData2d.push_back(0);
 
-            mPolyLines.push_back(std::pair(i, (i + 1) % n));
+            mOuterPolyLines.push_back(std::pair(i, (i + 1) % n));
         }
     }
 
@@ -141,7 +141,7 @@ namespace Algorithm
             for (int i = holeStartIndex; i < holeStartIndex + holePointsCnt; ++i)
             {
                 int nextIndex = i + 1 < holeStartIndex + holePointsCnt ? i + 1 : i + 1 - holePointsCnt;
-                mPolyLines.push_back(std::pair(i, nextIndex));
+                mContourPolyLines.push_back(std::pair(i, nextIndex));
                 if (mDebug)
                     std::cout << "push (" << i << "," << nextIndex << ")" << std::endl;
             }
@@ -257,9 +257,9 @@ namespace Algorithm
 //                if (mInnerHoles.size() == 0 && isInsidePolygon[squareLineStart] && isInsidePolygon[squareLineEnd])//line within polygon
 //                    continue;
 
-                for (int j = 0; j < mPolyLines.size(); ++j)
+                for (int j = 0; j < mContourPolyLines.size(); ++j)
                 {
-                    auto polyLine = mPolyLines[j];
+                    auto polyLine = mContourPolyLines[j];
 
 //                    //if line is completely inside square there would be no intersection
 //                    int polylineStart = polyLine.first;
@@ -456,17 +456,21 @@ namespace Algorithm
     void SquarePolygonIntersection::CalculateIntersectedPolygons()
     {
         mSubPolygons.clear();
-
-        if (mUpdatePolygon || mUpdateHoles)
-            mContourPoints = mOuterContourPoints;
+        bool hasHoles = !mInnerHoles.empty();
 
         if (mUpdatePolygon)
             InitializePolygon();
 
+        if (mUpdatePolygon || (hasHoles && mUpdateHoles))
+        {
+            mContourPoints = mOuterContourPoints;
+            mContourPolyLines = mOuterPolyLines;
+        }
+
         if (mUpdateSquare)
             InitializeSquare();
 
-        if (!mInnerHoles.empty() && mUpdateHoles)
+        if (hasHoles && mUpdateHoles)
             InitializeHoles();
 
         if (!HasIntersection())
