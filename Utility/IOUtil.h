@@ -9,8 +9,8 @@
 
 namespace Utility
 {
-	vtkSmartPointer<vtkPolyData> ReadPolyData(const std::string& fileName);
-	void WritePolyData(const std::string& fileName, vtkSmartPointer<vtkPolyData> polyData);
-	std::vector<vtkVector3d> ReadFromFile(const char* dir);
-	void WriteToFile(const std::vector<vtkVector3d>& vector, const char* dir);
+    vtkSmartPointer <vtkPolyData> ReadPolyData(const char* fileDir);
+    void WritePolyData(const char* fileDir, vtkSmartPointer <vtkPolyData> polyData);
+    std::vector <vtkVector3d> ReadVectorFromFile(const char* dir);
+    void WriteVectorToFile(const std::vector <vtkVector3d>& vector, const char* dir);
 }

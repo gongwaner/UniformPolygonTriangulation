@@ -23,14 +23,12 @@
 
 void TestUniformTriangulation(const std::vector<vtkVector3d>& polygonPoints, const std::vector<std::vector<vtkVector3d>>& holes, bool debug = false)
 {
-    using namespace Algorithm;
-
     double polygonNormal[3];
     Utility::ComputePolygonNormal(polygonPoints, polygonNormal);
 
     auto start = std::chrono::high_resolution_clock::now();
 
-    UniformPolygonTriangulation triangulation;
+    Algorithm::UniformPolygonTriangulation triangulation;
     triangulation.mDebug = debug;
     triangulation.SetPolygonPoints(polygonPoints);
     triangulation.SetHoles(holes);
@@ -142,14 +140,14 @@ int main(int argc, char* argv[])
     else
     {
         printf("polygon file: %s\n", argv[1]);
-        polygonPoints = Utility::ReadFromFile(argv[1]);
+        polygonPoints = Utility::ReadVectorFromFile(argv[1]);
 
         if (argc > 2)
         {
             for (int i = 2; i < argc; ++i)
             {
                 printf("hole%i file: %s\n", i - 2, argv[i]);
-                holes.push_back(Utility::ReadFromFile(argv[i]));
+                holes.push_back(Utility::ReadVectorFromFile(argv[i]));
             }
         }
     }
