@@ -103,12 +103,20 @@ namespace Algorithm
 
             mOuterPolyLines.push_back(std::pair(i, (i + 1) % n));
         }
+
+        mContourPoints = mOuterContourPoints;
+        mContourPointsData2d = mOuterPolygonPointsData2d;
+        mContourPolyLines = mOuterPolyLines;
     }
 
     void SquarePolygonIntersection::InitializeHoles()
     {
         if (mInnerHoles.empty())
             return;
+
+        mContourPoints = mOuterContourPoints;
+        mContourPointsData2d = mOuterPolygonPointsData2d;
+        mContourPolyLines = mOuterPolyLines;
 
         mUpdateHoles = false;
         mComponentEndIndices.clear();
@@ -455,13 +463,6 @@ namespace Algorithm
 
         if (mUpdatePolygon)
             InitializePolygon();
-
-        if (mUpdatePolygon || (hasHoles && mUpdateHoles))
-        {
-            mContourPoints = mOuterContourPoints;
-            mContourPointsData2d = mOuterPolygonPointsData2d;
-            mContourPolyLines = mOuterPolyLines;
-        }
 
         if (mUpdateSquare)
             InitializeSquare();
