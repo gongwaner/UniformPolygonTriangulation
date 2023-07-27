@@ -48,7 +48,7 @@ namespace Utility
     }
 
     bool GetLineIntersection(const vtkVector3d& line1Start, const vtkVector3d& line1End, const vtkVector3d& line2Start, const vtkVector3d& line2End,
-                             vtkVector3d& intersectionPoint)
+                             vtkVector3d& intersectionPoint, const double epsilon)
     {
         double u, v;
         int result = vtkLine::Intersection(line1Start.GetData(), line1End.GetData(), line2Start.GetData(), line2End.GetData(), u, v);
@@ -56,7 +56,7 @@ namespace Utility
         if (result == vtkLine::IntersectionType::NoIntersect)
             return false;
 
-        if (u > 0 && u < 1 && v > 0 && v < 1)
+        if (u > epsilon && u < 1 && v > epsilon && v < 1)
         {
             intersectionPoint = line1Start + u * (line1End - line1Start);
             return true;
