@@ -109,48 +109,30 @@ int main(int argc, char* argv[])
     std::vector<vtkVector3d> polygonPoints;
     std::vector<std::vector<vtkVector3d>> holes;
 
-    if (argc < 2)
-    {
-        //predefined data
-        polygonPoints.push_back(vtkVector3d(2.51, 8.32, 0));
-        polygonPoints.push_back(vtkVector3d(1.86, 13.72, 0));
-        polygonPoints.push_back(vtkVector3d(3.56, 19.92, 0));
-        polygonPoints.push_back(vtkVector3d(9.46, 17.52, 0));
-        polygonPoints.push_back(vtkVector3d(20.71, 19.52, 0));
-        polygonPoints.push_back(vtkVector3d(18.61, 15.27, 0));
-        polygonPoints.push_back(vtkVector3d(21.86, 9.52, 0));
-        polygonPoints.push_back(vtkVector3d(11.21, 11.27, 0));
+    polygonPoints.push_back(vtkVector3d(2.51, 8.32, 0));
+    polygonPoints.push_back(vtkVector3d(1.86, 13.72, 0));
+    polygonPoints.push_back(vtkVector3d(3.56, 19.92, 0));
+    polygonPoints.push_back(vtkVector3d(9.46, 17.52, 0));
+    polygonPoints.push_back(vtkVector3d(20.71, 19.52, 0));
+    polygonPoints.push_back(vtkVector3d(18.61, 15.27, 0));
+    polygonPoints.push_back(vtkVector3d(21.86, 9.52, 0));
+    polygonPoints.push_back(vtkVector3d(11.21, 11.27, 0));
 
-        std::vector<vtkVector3d> hole0;
-        hole0.push_back(vtkVector3d(5.31, 12.67, 0));
-        hole0.push_back(vtkVector3d(7.91, 12.77, 0));
-        hole0.push_back(vtkVector3d(7.96, 14.92, 0));
-        hole0.push_back(vtkVector3d(5.46, 15.07, 0));
+    std::vector<vtkVector3d> hole0;
+    hole0.push_back(vtkVector3d(5.31, 12.67, 0));
+    hole0.push_back(vtkVector3d(7.91, 12.77, 0));
+    hole0.push_back(vtkVector3d(7.96, 14.92, 0));
+    hole0.push_back(vtkVector3d(5.46, 15.07, 0));
 
-        std::vector<vtkVector3d> hole1;
-        hole1.push_back(vtkVector3d(12.31, 13.42, 0));
-        hole1.push_back(vtkVector3d(14.76, 12.92, 0));
-        hole1.push_back(vtkVector3d(16.91, 13.62, 0));
-        hole1.push_back(vtkVector3d(16.11, 16.42, 0));
-        hole1.push_back(vtkVector3d(12.61, 16.32, 0));
+    std::vector<vtkVector3d> hole1;
+    hole1.push_back(vtkVector3d(12.31, 13.42, 0));
+    hole1.push_back(vtkVector3d(14.76, 12.92, 0));
+    hole1.push_back(vtkVector3d(16.91, 13.62, 0));
+    hole1.push_back(vtkVector3d(16.11, 16.42, 0));
+    hole1.push_back(vtkVector3d(12.61, 16.32, 0));
 
-        holes.push_back(hole0);
-        holes.push_back(hole1);
-    }
-    else
-    {
-        printf("polygon file: %s\n", argv[1]);
-        polygonPoints = Utility::ReadVectorFromFile(argv[1]);
-
-        if (argc > 2)
-        {
-            for (int i = 2; i < argc; ++i)
-            {
-                printf("hole%i file: %s\n", i - 2, argv[i]);
-                holes.push_back(Utility::ReadVectorFromFile(argv[i]));
-            }
-        }
-    }
+    holes.push_back(hole0);
+    holes.push_back(hole1);
 
     TestUniformTriangulation(polygonPoints, holes, debug);
 }
