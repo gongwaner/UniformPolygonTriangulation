@@ -95,7 +95,7 @@ namespace Utility
         vtkMath::Normalize(normal);
     }
 
-    bool EpsilonEqual(const vtkVector3d& p0, const vtkVector3d& p1, double epsilon)
+    bool EpsilonEqual(const vtkVector3d& p0, const vtkVector3d& p1, const double epsilon)
     {
         return abs(p0[0] - p1[0]) < epsilon && abs(p0[1] - p1[1]) < epsilon && abs(p0[2] - p1[2]) < epsilon;
     }
@@ -120,6 +120,24 @@ namespace Utility
         }
 
         return triangle;
+    }
+
+    /**
+     * check if a point if within polygon by projecting it to 2d plane then perform check.
+     * Directly call vtkPolygon::PointInPolygon() will fail for cases where point is epsilon larger in z than plane
+     * note: This function returns TRUE if query point is polygon point
+     */
+    bool PointInPolygon(const int numOfPoints, double* polygonPoints2d, const vtkVector3d& planeCenter, const vtkVector3d& axisX, const vtkVector3d& axisY,
+                        double polygonBounds[6], const vtkVector3d& point)
+    {
+        //projection along local axes
+        auto cp = point - planeCenter;
+        auto xProj = cp.Dot(axisX);
+        auto yProj = cp.Dot(axisY);
+
+        double pointToQuery[3]{xProj, yProj, 0};
+        double normal2d[3]{0, 0, 1};
+        return vtkPolygon::PointInPolygon(pointToQuery, numOfPoints, polygonPoints2d, polygonBounds, normal2d);
     }
 }
 

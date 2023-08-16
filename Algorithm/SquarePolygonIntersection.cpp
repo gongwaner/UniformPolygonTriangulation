@@ -210,6 +210,9 @@ namespace Algorithm
                (yProj < mSquareBounds[3] || abs(yProj - mSquareBounds[3]) < mEpsilon);
     }
 
+    /**
+     * only return TRUE if intersection point of two lines is not end point of any line
+     */
     bool SquarePolygonIntersection::LineIntersects(int squareLineID, const std::pair<int, int>& polyLine, vtkVector3d& intersectionPoint) const
     {
         int squareStartIndex = squareLineID;
@@ -270,6 +273,7 @@ namespace Algorithm
 //                    if (isInsideSquare[polylineStart] && isInsideSquare[polylineEnd])
 //                        continue;
 
+                    //TODO: if polyline end points are on lines of square, then intersection point would be polyline end points
                     if (LineIntersects(i, polyLine, intersectionPoint))
                     {
                         if (mDebug)

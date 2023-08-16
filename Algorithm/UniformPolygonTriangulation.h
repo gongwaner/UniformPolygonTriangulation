@@ -47,7 +47,6 @@ namespace Algorithm
         void InitializePlane();
         void InitializePolygon();
         void InitializeHoles();
-        bool IsInPolygon(const vtkVector3d& point);
         bool IsInHole(const vtkVector3d& point, int holeID);
         bool AllPointsInPolygon(const std::vector<vtkVector3d>& points);
         bool AllPointsInHole(const std::vector<vtkVector3d>& points);
