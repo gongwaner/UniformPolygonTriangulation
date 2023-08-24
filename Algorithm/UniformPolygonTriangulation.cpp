@@ -13,6 +13,98 @@
 
 namespace Algorithm
 {
+    bool HasHoles(const std::vector<std::vector<vtkVector3d>>& holes)
+    {
+        if (holes.empty())
+            return false;
+
+        for (const auto& hole: holes)
+        {
+            if (!hole.empty())
+                return true;
+        }
+
+        return false;
+    }
+
+    void GetSquareBounds2D(const vtkVector3d& planeCenter, const vtkVector3d& axisX, const vtkVector3d& axisY, const std::vector<vtkVector3d>& squarePoints,
+                           double squareBounds[4])
+    {
+        double minXProj = DBL_MAX;
+        double maxXProj = -DBL_MAX;
+        double minYProj = DBL_MAX;
+        double maxYProj = -DBL_MAX;
+
+        for (const auto& point: squarePoints)
+        {
+            //projection along local axes
+            auto cp = point - planeCenter;
+            auto xProj = cp.Dot(axisX);
+            auto yProj = cp.Dot(axisY);
+
+            if (xProj > maxXProj)
+                maxXProj = xProj;
+
+            if (xProj < minXProj)
+                minXProj = xProj;
+
+            if (yProj > maxYProj)
+                maxYProj = yProj;
+
+            if (yProj < minYProj)
+                minYProj = yProj;
+        }
+
+        squareBounds[0] = minXProj;
+        squareBounds[1] = maxXProj;
+        squareBounds[2] = minYProj;
+        squareBounds[3] = maxYProj;
+    }
+
+    bool AllPolygonPointsOutsideSquare(const vtkVector3d& planeCenter, const vtkVector3d& axisX, const vtkVector3d& axisY,
+                                       const std::vector<vtkVector3d>& squarePoints, const std::vector<vtkVector3d>& polygonPoints, const double epsilon = 1e-6)
+    {
+        double squareBounds[4];
+        GetSquareBounds2D(planeCenter, axisX, axisY, squarePoints, squareBounds);
+
+        for (const auto& polyPnt: polygonPoints)
+        {
+            //point is one of the square point. consider this outside square
+            bool epsilonEqualSquare = false;
+            for (const auto& squarePnt: squarePoints)
+            {
+                if (Utility::EpsilonEqual(polyPnt, squarePnt, epsilon))
+                {
+                    epsilonEqualSquare = true;
+                    break;
+                }
+            }
+
+            if (epsilonEqualSquare)
+                continue;
+
+            //local projection
+            auto cp = (polyPnt - planeCenter);
+            double xProj = cp.Dot(axisX);
+            double yProj = cp.Dot(axisY);
+
+            //point on square edge
+            if (abs(xProj - squareBounds[0]) < epsilon || abs(xProj - squareBounds[1]) < epsilon || abs(yProj - squareBounds[2]) < epsilon ||
+                abs(yProj - squareBounds[3]) < epsilon)
+            {
+                continue;
+            }
+
+            //check if it's outside square
+            if (xProj > squareBounds[0] && xProj < squareBounds[1] && yProj > squareBounds[2] && yProj < squareBounds[3])
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     vtkSmartPointer<vtkPolyData> DivideSquareByDiagonal(const std::vector<vtkVector3d>& squarePoints, const vtkVector3d& planeNormal)
     {
         auto squarePolyData = vtkSmartPointer<vtkPolyData>::New();
@@ -148,23 +240,6 @@ namespace Algorithm
         }
     }
 
-    bool UniformPolygonTriangulation::IsInHole(const vtkVector3d& point, int holeID)
-    {
-        if (holeID >= mInnerHoles.size())
-            return false;
-
-        //projection along local axes
-        auto cp = point - mPlaneCenter;
-        auto xProj = cp.Dot(mAxisX);
-        auto yProj = cp.Dot(mAxisY);
-
-        double pointToQuery[3]{xProj, yProj, 0};
-        double normal2d[3]{0, 0, 1};
-
-        return vtkPolygon::PointInPolygon(pointToQuery, mInnerHoles[holeID].size(), mHolePointsData2dVector[holeID].data(), mHolesBounds[holeID].data(),
-                                          normal2d);
-    }
-
     bool EpsilonEqualPolygonPoints(const std::vector<vtkVector3d>& polygonPoints, const vtkVector3d& point, const double epsilon = 1e-6)
     {
         for (const auto& p: polygonPoints)
@@ -178,7 +253,6 @@ namespace Algorithm
 
     bool UniformPolygonTriangulation::AllPointsInPolygon(const std::vector<vtkVector3d>& points)
     {
-        bool allInside = true;
         for (const auto& point: points)
         {
             //corner case: if point IS polygon point, it's considered inside polygon
@@ -187,50 +261,59 @@ namespace Algorithm
 
             if (!Utility::PointInPolygon(mPolygonPoints.size(), mPolygonPointsData2d.data(), mPlaneCenter, mAxisX, mAxisY, mPolygonBounds, point))
             {
-                allInside = false;
-                break;
+                return false;
             }
         }
 
-        return allInside;
+        return true;
     }
 
-    bool UniformPolygonTriangulation::AllPointsInHole(const std::vector<vtkVector3d>& points)
+    bool UniformPolygonTriangulation::AllPointsOutsidePolygon(const std::vector<vtkVector3d>& points)
     {
-        bool isInAnyHole = false;
-        for (int holeID = 0; holeID < mInnerHoles.size(); ++holeID)
+        for (const auto& point: points)
         {
-            bool allInside = true;
-            for (const auto& point: points)
-            {
-                if (!IsInHole(point, holeID))
-                {
-                    allInside = false;
-                    break;
-                }
-            }
+            //corner case: if point IS polygon point, it's considered outside polygon
+            if (EpsilonEqualPolygonPoints(mPolygonPoints, point))
+                continue;
 
-            if (allInside)
+            if (Utility::PointInPolygon(mPolygonPoints.size(), mPolygonPointsData2d.data(), mPlaneCenter, mAxisX, mAxisY, mPolygonBounds, point))
             {
-                isInAnyHole = true;
-                break;
+                return false;
             }
         }
 
-        return isInAnyHole;
+        return true;
+    }
+
+    bool UniformPolygonTriangulation::AllPointsInHole(const std::vector<vtkVector3d>& points, int holeID)
+    {
+        auto holePoints = mInnerHoles[holeID];
+
+        for (const auto& point: points)
+        {
+            //corner case: if point IS hole point, it's considered inside hole
+            if (EpsilonEqualPolygonPoints(holePoints, point))
+                continue;
+
+            if (!Utility::PointInPolygon(holePoints.size(), mHolePointsData2dVector[holeID].data(), mPlaneCenter, mAxisX, mAxisY, mHolesBounds[holeID].data(), point))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     void UniformPolygonTriangulation::Triangulate()
     {
         InitializePolygon();
 
-        bool hasHoles = !mInnerHoles.empty();
+        bool hasHoles = HasHoles(mInnerHoles);
+        if (mDebug)
+            printf("has holes = %s, holes cnt: %zu\n", hasHoles ? "True" : "False", mInnerHoles.size());
+
         if (hasHoles)
-        {
-            if (mDebug)
-                printf("holes cnt: %zu\n", mInnerHoles.size());
             InitializeHoles();
-        }
 
         if (mLength == 0)
             mLength = std::min(mBoundingBoxWidth, mBoundingBoxHeight) * 0.15;
@@ -279,25 +362,44 @@ namespace Algorithm
                     squarePoints[i] -= offsetY * mAxisY;
                 }
 
-                bool allSquarePointsInPolygon = AllPointsInPolygon(squarePoints);
-
-                //check if all square points are inside polygon
-                if (!hasHoles && allSquarePointsInPolygon)
+                if (AllPolygonPointsOutsideSquare(mPlaneCenter, mAxisX, mAxisY, squarePoints, mPolygonPoints))
                 {
-                    if (mDebug)
-                        std::cout << "no holes and all square points inside polygon. Make square" << std::endl;
-                    subTriangulationVector.push_back(DivideSquareByDiagonal(squarePoints, mNormal));
-                    continue;
-                }
-
-                if (hasHoles)
-                {
-                    if (AllPointsInHole(squarePoints))
+                    if (AllPointsOutsidePolygon(squarePoints))
                     {
-                        //leave this as blank area
-                        if (mDebug)
-                            std::cout << "all square points in hole" << std::endl;
+                        //square is completely outside polygon
                         continue;
+                    }
+
+                    if (AllPointsInPolygon(squarePoints))
+                    {
+                        if (!hasHoles)
+                        {
+                            //square completely inside polygon
+                            subTriangulationVector.push_back(DivideSquareByDiagonal(squarePoints, mNormal));
+                            continue;
+                        }
+                        else
+                        {
+                            //check if square is completely inside any of the hole
+                            //ie. all hole points outside square and all square points inside hole
+                            bool insideOneOfHoles = false;
+                            for (int holeID = 0; holeID < mInnerHoles.size(); ++holeID)
+                            {
+                                auto holePnts = mInnerHoles[holeID];
+                                if (AllPolygonPointsOutsideSquare(mPlaneCenter, mAxisX, mAxisY, squarePoints, holePnts) &&
+                                    AllPointsInHole(squarePoints, holeID))
+                                {
+                                    //leave this as blank area
+                                    if (mDebug)
+                                        printf("square inside hole %i\n", holeID);
+                                    insideOneOfHoles = true;
+                                    break;
+                                }
+                            }
+
+                            if (insideOneOfHoles)
+                                continue;
+                        }
                     }
                 }
 
@@ -306,7 +408,7 @@ namespace Algorithm
                 polygonIntersection.CalculateIntersectedPolygons();
                 auto subPolygons = polygonIntersection.GetIntersectedPolygon();
 
-                if (subPolygons.empty() && allSquarePointsInPolygon)
+                if (subPolygons.empty())
                 {
                     if (mDebug)
                         std::cout << "outside hole and inside polygon. make square" << std::endl;

@@ -47,9 +47,9 @@ namespace Algorithm
         void InitializePlane();
         void InitializePolygon();
         void InitializeHoles();
-        bool IsInHole(const vtkVector3d& point, int holeID);
         bool AllPointsInPolygon(const std::vector<vtkVector3d>& points);
-        bool AllPointsInHole(const std::vector<vtkVector3d>& points);
+        bool AllPointsOutsidePolygon(const std::vector<vtkVector3d>& points);
+        bool AllPointsInHole(const std::vector<vtkVector3d>& points, int holeID);
 
         std::vector<vtkVector3d> mPolygonPoints;
         std::vector<std::vector<vtkVector3d>> mInnerHoles;
@@ -73,5 +73,3 @@ namespace Algorithm
         vtkSmartPointer<vtkPolyData> mTriangulatedPolygon = nullptr;
     };
 }
-
-
