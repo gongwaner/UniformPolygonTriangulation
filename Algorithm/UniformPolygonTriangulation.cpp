@@ -304,6 +304,25 @@ namespace Algorithm
         return true;
     }
 
+    bool UniformPolygonTriangulation::AllPointsOutsideHole(const std::vector<vtkVector3d>& points, int holeID)
+    {
+        auto holePoints = mInnerHoles[holeID];
+
+        for (const auto& point: points)
+        {
+            //corner case: if point IS hole point, it's considered outside hole
+            if (EpsilonEqualPolygonPoints(holePoints, point))
+                continue;
+
+            if (Utility::PointInPolygon(holePoints.size(), mHolePointsData2dVector[holeID].data(), mPlaneCenter, mAxisX, mAxisY, mHolesBounds[holeID].data(), point))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     void UniformPolygonTriangulation::Triangulate()
     {
         InitializePolygon();
@@ -399,6 +418,36 @@ namespace Algorithm
 
                             if (insideOneOfHoles)
                                 continue;
+
+                            //check if square is completely outside all holes
+                            bool allHolePointsOutsideSquare = true;
+                            for (const auto& hole: mInnerHoles)
+                            {
+                                if (!AllPolygonPointsOutsideSquare(mPlaneCenter, mAxisX, mAxisY, squarePoints, hole))
+                                {
+                                    allHolePointsOutsideSquare = false;
+                                    break;
+                                }
+                            }
+
+                            if (allHolePointsOutsideSquare)
+                            {
+                                bool allSquarePointsOutsideHoles = true;
+                                for (int holeID = 0; holeID < mInnerHoles.size(); ++holeID)
+                                {
+                                    if (!AllPointsOutsideHole(squarePoints, holeID))
+                                    {
+                                        allSquarePointsOutsideHoles = false;
+                                        break;
+                                    }
+                                }
+
+                                if (allSquarePointsOutsideHoles)
+                                {
+                                    subTriangulationVector.push_back(DivideSquareByDiagonal(squarePoints, mNormal));
+                                    continue;
+                                }
+                            }
                         }
                     }
                 }
@@ -407,14 +456,6 @@ namespace Algorithm
                 polygonIntersection.SetSquarePoints(squarePoints);
                 polygonIntersection.CalculateIntersectedPolygons();
                 auto subPolygons = polygonIntersection.GetIntersectedPolygon();
-
-                if (subPolygons.empty())
-                {
-                    if (mDebug)
-                        std::cout << "outside hole and inside polygon. make square" << std::endl;
-                    subTriangulationVector.push_back(DivideSquareByDiagonal(squarePoints, mNormal));
-                    continue;
-                }
 
                 for (const auto& subPolygon: subPolygons)
                 {

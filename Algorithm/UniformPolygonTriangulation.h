@@ -50,6 +50,7 @@ namespace Algorithm
         bool AllPointsInPolygon(const std::vector<vtkVector3d>& points);
         bool AllPointsOutsidePolygon(const std::vector<vtkVector3d>& points);
         bool AllPointsInHole(const std::vector<vtkVector3d>& points, int holeID);
+        bool AllPointsOutsideHole(const std::vector<vtkVector3d>& points, int holeID);
 
         std::vector<vtkVector3d> mPolygonPoints;
         std::vector<std::vector<vtkVector3d>> mInnerHoles;
