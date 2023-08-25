@@ -125,7 +125,7 @@ namespace Algorithm
             if (EpsilonEqualPolygonPoints(polygonPoints, point))
                 continue;
 
-            if (!Utility::PointInPolygon(polygonPoints.size(), polygonPointsData2d.data(), planeCenter, axisX, axisY, polygonBounds, point))
+            if (!Utility::PointInPolygon(polygonPoints.size(), polygonPointsData2d.data(), polygonBounds, planeCenter, axisX, axisY, point))
             {
                 return false;
             }
@@ -143,7 +143,7 @@ namespace Algorithm
             if (EpsilonEqualPolygonPoints(polygonPoints, point))
                 continue;
 
-            if (Utility::PointInPolygon(polygonPoints.size(), polygonPointsData2d.data(), planeCenter, axisX, axisY, polygonBounds, point))
+            if (Utility::PointInPolygon(polygonPoints.size(), polygonPointsData2d.data(), polygonBounds, planeCenter, axisX, axisY, point))
             {
                 return false;
             }

@@ -47,11 +47,13 @@ namespace Utility
         return true;
     }
 
-    LineIntersectionType GetLineIntersectionType(const vtkVector3d& line1Start, const vtkVector3d& line1End, const vtkVector3d& line2Start,
-                                                 const vtkVector3d& line2End, const double epsilon)
+    LineIntersectionType GetLineIntersectionType(const vtkVector3d& line1Start, const vtkVector3d& line1End,
+                                                 const vtkVector3d& line2Start, const vtkVector3d& line2End,
+                                                 vtkVector3d& intersectionPoint, const double epsilon)
     {
         double u, v;
         vtkLine::Intersection(line1Start.GetData(), line1End.GetData(), line2Start.GetData(), line2End.GetData(), u, v);
+        intersectionPoint = line1Start + u * (line1End - line1Start);
 
         if ((abs(u) < epsilon || abs(u - 1.0) < epsilon) && (abs(v) < epsilon || abs(v - 1.0) < epsilon))
             return LineIntersectionType::CommonEndPoint;
@@ -146,8 +148,9 @@ namespace Utility
      * Directly call vtkPolygon::PointInPolygon() will fail for cases where point is epsilon larger in z than plane
      * note: This function returns TRUE if query point is polygon point
      */
-    bool PointInPolygon(const int numOfPoints, const double* polygonPoints2d, const vtkVector3d& planeCenter, const vtkVector3d& axisX,
-                        const vtkVector3d& axisY, double polygonBounds[6], const vtkVector3d& point)
+    bool PointInPolygon(const int numOfPoints, const double* polygonPoints2d, double polygonBounds[6],
+                        const vtkVector3d& planeCenter, const vtkVector3d& axisX, const vtkVector3d& axisY,
+                        const vtkVector3d& point)
     {
         //projection along local axes
         auto cp = point - planeCenter;
