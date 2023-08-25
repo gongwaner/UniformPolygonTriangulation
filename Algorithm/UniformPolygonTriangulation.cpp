@@ -105,6 +105,53 @@ namespace Algorithm
         return true;
     }
 
+    bool EpsilonEqualPolygonPoints(const std::vector<vtkVector3d>& polygonPoints, const vtkVector3d& point, const double epsilon = 1e-6)
+    {
+        for (const auto& p: polygonPoints)
+        {
+            if (Utility::EpsilonEqual(p, point, epsilon))
+                return true;
+        }
+
+        return false;
+    }
+
+    bool AllPointsInPolygon(const std::vector<vtkVector3d>& polygonPoints, const std::vector<double>& polygonPointsData2d, const vtkVector3d& planeCenter,
+                            const vtkVector3d& axisX, const vtkVector3d& axisY, double polygonBounds[6], const std::vector<vtkVector3d>& points)
+    {
+        for (const auto& point: points)
+        {
+            //corner case: if point IS polygon point, it's considered inside polygon
+            if (EpsilonEqualPolygonPoints(polygonPoints, point))
+                continue;
+
+            if (!Utility::PointInPolygon(polygonPoints.size(), polygonPointsData2d.data(), planeCenter, axisX, axisY, polygonBounds, point))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    bool AllPointsOutsidePolygon(const std::vector<vtkVector3d>& polygonPoints, const std::vector<double>& polygonPointsData2d, const vtkVector3d& planeCenter,
+                                 const vtkVector3d& axisX, const vtkVector3d& axisY, double polygonBounds[6], const std::vector<vtkVector3d>& points)
+    {
+        for (const auto& point: points)
+        {
+            //corner case: if point IS polygon point, it's considered outside polygon
+            if (EpsilonEqualPolygonPoints(polygonPoints, point))
+                continue;
+
+            if (Utility::PointInPolygon(polygonPoints.size(), polygonPointsData2d.data(), planeCenter, axisX, axisY, polygonBounds, point))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     vtkSmartPointer<vtkPolyData> DivideSquareByDiagonal(const std::vector<vtkVector3d>& squarePoints, const vtkVector3d& planeNormal)
     {
         auto squarePolyData = vtkSmartPointer<vtkPolyData>::New();
@@ -240,89 +287,6 @@ namespace Algorithm
         }
     }
 
-    bool EpsilonEqualPolygonPoints(const std::vector<vtkVector3d>& polygonPoints, const vtkVector3d& point, const double epsilon = 1e-6)
-    {
-        for (const auto& p: polygonPoints)
-        {
-            if (Utility::EpsilonEqual(p, point, epsilon))
-                return true;
-        }
-
-        return false;
-    }
-
-    bool UniformPolygonTriangulation::AllPointsInPolygon(const std::vector<vtkVector3d>& points)
-    {
-        for (const auto& point: points)
-        {
-            //corner case: if point IS polygon point, it's considered inside polygon
-            if (EpsilonEqualPolygonPoints(mPolygonPoints, point))
-                continue;
-
-            if (!Utility::PointInPolygon(mPolygonPoints.size(), mPolygonPointsData2d.data(), mPlaneCenter, mAxisX, mAxisY, mPolygonBounds, point))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    bool UniformPolygonTriangulation::AllPointsOutsidePolygon(const std::vector<vtkVector3d>& points)
-    {
-        for (const auto& point: points)
-        {
-            //corner case: if point IS polygon point, it's considered outside polygon
-            if (EpsilonEqualPolygonPoints(mPolygonPoints, point))
-                continue;
-
-            if (Utility::PointInPolygon(mPolygonPoints.size(), mPolygonPointsData2d.data(), mPlaneCenter, mAxisX, mAxisY, mPolygonBounds, point))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    bool UniformPolygonTriangulation::AllPointsInHole(const std::vector<vtkVector3d>& points, int holeID)
-    {
-        auto holePoints = mInnerHoles[holeID];
-
-        for (const auto& point: points)
-        {
-            //corner case: if point IS hole point, it's considered inside hole
-            if (EpsilonEqualPolygonPoints(holePoints, point))
-                continue;
-
-            if (!Utility::PointInPolygon(holePoints.size(), mHolePointsData2dVector[holeID].data(), mPlaneCenter, mAxisX, mAxisY, mHolesBounds[holeID].data(), point))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    bool UniformPolygonTriangulation::AllPointsOutsideHole(const std::vector<vtkVector3d>& points, int holeID)
-    {
-        auto holePoints = mInnerHoles[holeID];
-
-        for (const auto& point: points)
-        {
-            //corner case: if point IS hole point, it's considered outside hole
-            if (EpsilonEqualPolygonPoints(holePoints, point))
-                continue;
-
-            if (Utility::PointInPolygon(holePoints.size(), mHolePointsData2dVector[holeID].data(), mPlaneCenter, mAxisX, mAxisY, mHolesBounds[holeID].data(), point))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     void UniformPolygonTriangulation::Triangulate()
     {
         InitializePolygon();
@@ -383,13 +347,13 @@ namespace Algorithm
 
                 if (AllPolygonPointsOutsideSquare(mPlaneCenter, mAxisX, mAxisY, squarePoints, mPolygonPoints))
                 {
-                    if (AllPointsOutsidePolygon(squarePoints))
+                    if (AllPointsOutsidePolygon(mPolygonPoints, mPolygonPointsData2d, mPlaneCenter, mAxisX, mAxisY, mPolygonBounds, squarePoints))
                     {
                         //square is completely outside polygon
                         continue;
                     }
 
-                    if (AllPointsInPolygon(squarePoints))
+                    if (AllPointsInPolygon(mPolygonPoints, mPolygonPointsData2d, mPlaneCenter, mAxisX, mAxisY, mPolygonBounds, squarePoints))
                     {
                         if (!hasHoles)
                         {
@@ -406,7 +370,8 @@ namespace Algorithm
                             {
                                 auto holePnts = mInnerHoles[holeID];
                                 if (AllPolygonPointsOutsideSquare(mPlaneCenter, mAxisX, mAxisY, squarePoints, holePnts) &&
-                                    AllPointsInHole(squarePoints, holeID))
+                                    AllPointsInPolygon(mInnerHoles[holeID], mHolePointsData2dVector[holeID], mPlaneCenter, mAxisX, mAxisY,
+                                                       mHolesBounds[holeID].data(), squarePoints))
                                 {
                                     //leave this as blank area
                                     if (mDebug)
@@ -435,7 +400,8 @@ namespace Algorithm
                                 bool allSquarePointsOutsideHoles = true;
                                 for (int holeID = 0; holeID < mInnerHoles.size(); ++holeID)
                                 {
-                                    if (!AllPointsOutsideHole(squarePoints, holeID))
+                                    if (!AllPointsOutsidePolygon(mInnerHoles[holeID], mHolePointsData2dVector[holeID], mPlaneCenter, mAxisX, mAxisY,
+                                                                 mHolesBounds[holeID].data(), squarePoints))
                                     {
                                         allSquarePointsOutsideHoles = false;
                                         break;
