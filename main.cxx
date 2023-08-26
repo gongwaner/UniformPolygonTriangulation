@@ -46,27 +46,27 @@ void TestUniformTriangulation(const std::vector<vtkVector3d>& polygonPoints, con
         //polygon
         auto polygonPolyData = Utility::GetPolygonPolyData(polygonPoints);
         TestUtil::AddPolyData(polygonPolyData, colors->GetColor3d("LightSteelBlue").GetData(), actors, true);
-        for (int i = 0; i < polygonPoints.size(); ++i)
+        for(int i = 0; i < polygonPoints.size(); ++i)
         {
             auto color = i == 0 ? colors->GetColor3d("DarkSalmon").GetData() : colors->GetColor3d("LightGreen").GetData();
-            if (i == polygonPoints.size() - 1)
+            if(i == polygonPoints.size() - 1)
                 color = colors->GetColor3d("Black").GetData();
 
             TestUtil::AddPoint(polygonPoints[i], 8, color, actors);
         }
 
         //holes
-        for (int holeID = 0; holeID < holes.size(); ++holeID)
+        for(int holeID = 0; holeID < holes.size(); ++holeID)
         {
             auto hole = holes[holeID];
             auto holePolyData = Utility::GetPolygonPolyData(hole);
             TestUtil::AddPolyData(holePolyData, colors->GetColor3d("Navy").GetData(), actors, true);
 
             auto middlePointsColor = holeID == 0 ? colors->GetColor3d("Thistle").GetData() : colors->GetColor3d("Indigo").GetData();
-            for (int i = 0; i < hole.size(); ++i)
+            for(int i = 0; i < hole.size(); ++i)
             {
                 auto color = i == 0 ? colors->GetColor3d("DarkSalmon").GetData() : middlePointsColor;
-                if (i == hole.size() - 1)
+                if(i == hole.size() - 1)
                     color = colors->GetColor3d("Black").GetData();
                 TestUtil::AddPoint(hole[i], 8, color, actors);
             }
@@ -94,7 +94,7 @@ void TestUniformTriangulation(const std::vector<vtkVector3d>& polygonPoints, con
     vtkNew<vtkRenderWindowInteractor> renderWindowInteractor;
     renderWindowInteractor->SetRenderWindow(renderWindow);
 
-    for (auto actor: actors)
+    for(auto actor: actors)
         renderer->AddActor(actor);
     renderer->SetBackground(colors->GetColor3d("Silver").GetData());
 

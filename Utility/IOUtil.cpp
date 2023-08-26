@@ -23,42 +23,42 @@ namespace Utility
         vtkSmartPointer<vtkPolyData> polyData;
         auto extension = std::filesystem::path(fileDir).extension().string();
 
-        if (extension == ".ply")
+        if(extension == ".ply")
         {
             vtkNew<vtkPLYReader> reader;
             reader->SetFileName(fileDir);
             reader->Update();
             polyData = reader->GetOutput();
         }
-        else if (extension == ".vtp")
+        else if(extension == ".vtp")
         {
             vtkNew<vtkXMLPolyDataReader> reader;
             reader->SetFileName(fileDir);
             reader->Update();
             polyData = reader->GetOutput();
         }
-        else if (extension == ".obj")
+        else if(extension == ".obj")
         {
             vtkNew<vtkOBJReader> reader;
             reader->SetFileName(fileDir);
             reader->Update();
             polyData = reader->GetOutput();
         }
-        else if (extension == ".stl")
+        else if(extension == ".stl")
         {
             vtkNew<vtkSTLReader> reader;
             reader->SetFileName(fileDir);
             reader->Update();
             polyData = reader->GetOutput();
         }
-        else if (extension == ".vtk")
+        else if(extension == ".vtk")
         {
             vtkNew<vtkPolyDataReader> reader;
             reader->SetFileName(fileDir);
             reader->Update();
             polyData = reader->GetOutput();
         }
-        else if (extension == ".g")
+        else if(extension == ".g")
         {
             vtkNew<vtkBYUReader> reader;
             reader->SetGeometryFileName(fileDir);
@@ -76,21 +76,21 @@ namespace Utility
     {
         auto extension = std::filesystem::path(fileDir).extension().string();
 
-        if (extension == ".ply")
+        if(extension == ".ply")
         {
             vtkNew<vtkPLYWriter> writer;
             writer->SetFileName(fileDir);
             writer->SetInputData(polyData);
             writer->Write();
         }
-        else if (extension == ".obj")
+        else if(extension == ".obj")
         {
             vtkNew<vtkOBJWriter> writer;
             writer->SetFileName(fileDir);
             writer->SetInputData(polyData);
             writer->Write();
         }
-        else if (extension == ".stl")
+        else if(extension == ".stl")
         {
             vtkNew<vtkSTLWriter> writer;
             writer->SetFileName(fileDir);
@@ -109,9 +109,9 @@ namespace Utility
         std::ifstream inFile(dir);
         std::string line;
 
-        while (std::getline(inFile, line))
+        while(std::getline(inFile, line))
         {
-            if (line.empty())
+            if(line.empty())
                 continue;
 
             std::istringstream is(line);
@@ -126,7 +126,7 @@ namespace Utility
     {
         std::ofstream fs;
         fs.open(dir);
-        for (const auto& value: vector)
+        for(const auto& value: vector)
         {
             fs << value[0] << " " << value[1] << " " << value[2] << std::endl;
         }

@@ -10,7 +10,7 @@ namespace TestUtil
     void AddPolyData(vtkSmartPointer<vtkPolyData> polyData, const double* color, std::vector<vtkSmartPointer<vtkActor>>& actors, bool wireFrame)
     {
         auto polydataActor = Utility::GetPolyDataActor(polyData, color);
-        if (wireFrame)
+        if(wireFrame)
             polydataActor->GetProperty()->SetRepresentationToWireframe();
         actors.push_back(polydataActor);
     }

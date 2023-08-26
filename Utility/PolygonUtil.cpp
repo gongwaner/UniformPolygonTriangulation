@@ -68,24 +68,6 @@ namespace Utility
         return LineIntersectionType::NoIntersection;
     }
 
-    bool GetLineIntersection(const vtkVector3d& line1Start, const vtkVector3d& line1End, const vtkVector3d& line2Start, const vtkVector3d& line2End,
-                             vtkVector3d& intersectionPoint, const double epsilon)
-    {
-        double u, v;
-        int result = vtkLine::Intersection(line1Start.GetData(), line1End.GetData(), line2Start.GetData(), line2End.GetData(), u, v);
-
-        if (result == vtkLine::IntersectionType::NoIntersect)
-            return false;
-
-        if (u > epsilon && u < 1 && v > epsilon && v < 1)
-        {
-            intersectionPoint = line1Start + u * (line1End - line1Start);
-            return true;
-        }
-
-        return false;
-    }
-
     /**
      * compute normal for any kind of polygon. as vtkPolygon::ComputeNormal only works for convex polygon
      * ref: https://gitlab.kitware.com/vtk/vtk/-/issues/11988
