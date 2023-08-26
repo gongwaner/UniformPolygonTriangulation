@@ -15,7 +15,6 @@
 #include "Utility/ActorUtil.h"
 #include "Utility/PolygonUtil.h"
 #include "Utility/TestUtil.h"
-#include "Utility/IOUtil.h"
 #include "Algorithm/UniformPolygonTriangulation.h"
 
 #include <chrono>

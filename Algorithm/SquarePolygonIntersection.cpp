@@ -1,9 +1,9 @@
 #include "SquarePolygonIntersection.h"
 #include "../Utility/PolygonUtil.h"
+#include "../Utility/CommonUtil.h"
 
 #include <vtkBoundingBox.h>
 #include <vtkVectorOperators.h>
-#include <vtkLine.h>
 
 #include <queue>
 
@@ -51,24 +51,6 @@ namespace Algorithm
         }
     }
 
-    bool GetLineIntersection(const vtkVector3d& line1Start, const vtkVector3d& line1End, const vtkVector3d& line2Start, const vtkVector3d& line2End,
-                             vtkVector3d& intersectionPoint, const double epsilon = 1e-6)
-    {
-        double u, v;
-        int result = vtkLine::Intersection(line1Start.GetData(), line1End.GetData(), line2Start.GetData(), line2End.GetData(), u, v);
-
-        if(result == vtkLine::IntersectionType::NoIntersect)
-            return false;
-
-        if(u > epsilon && u < 1 && v > epsilon && v < 1)
-        {
-            intersectionPoint = line1Start + u * (line1End - line1Start);
-            return true;
-        }
-
-        return false;
-    }
-
     void SquarePolygonIntersection::SetPolygonPoints(const std::vector<vtkVector3d>& polygonPoints)
     {
         mOuterContourPoints = polygonPoints;
@@ -77,8 +59,11 @@ namespace Algorithm
 
     void SquarePolygonIntersection::SetHoles(const std::vector<std::vector<vtkVector3d>>& holes)
     {
-        mInnerHoles = holes;
-        mUpdateHoles = true;
+        if(Utility::HasElements(holes))
+        {
+            mInnerHoles = holes;
+            mUpdateHoles = true;
+        }
     }
 
     void SquarePolygonIntersection::SetSquarePoints(const std::vector<vtkVector3d>& squarePoints)
@@ -245,19 +230,10 @@ namespace Algorithm
         vtkVector3d polyEndPoint(mContourPointsData2d[polyEndIndex * 2], mContourPointsData2d[polyEndIndex * 2 + 1], 0);
 
         vtkVector3d intersectionPoint2d;
-        bool intersects = GetLineIntersection(squareStartPoint, squareEndPoint, polyStartPoint, polyEndPoint, intersectionPoint2d);
+        auto intersectionType = Utility::GetLineIntersectionType(squareStartPoint, squareEndPoint, polyStartPoint, polyEndPoint, intersectionPoint2d);
 
-        if(intersects)
+        if(intersectionType == Utility::LineIntersectionType::Intersection)
         {
-            //intersection points can't be duplicate of square/polygon points
-            if(Utility::EpsilonEqual(intersectionPoint2d, squareStartPoint, mEpsilon) ||
-               Utility::EpsilonEqual(intersectionPoint2d, squareEndPoint, mEpsilon) ||
-               Utility::EpsilonEqual(intersectionPoint2d, polyStartPoint, mEpsilon) ||
-               Utility::EpsilonEqual(intersectionPoint2d, polyEndPoint, mEpsilon))
-            {
-                return false;
-            }
-
             //convert intersection point back to 3d
             intersectionPoint = mPlaneCenter + mAxisX * intersectionPoint2d[0] + mAxisY * intersectionPoint2d[1];
             return true;

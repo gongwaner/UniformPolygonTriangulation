@@ -4,6 +4,7 @@
 #include "../Utility/GeometricObjectUtil.h"
 #include "../Utility/MeshUtil.h"
 #include "../Utility/PolygonUtil.h"
+#include "../Utility/CommonUtil.h"
 
 #include <vtkPolygon.h>
 #include <vtkVectorOperators.h>
@@ -13,20 +14,6 @@
 
 namespace Algorithm
 {
-    bool HasHoles(const std::vector<std::vector<vtkVector3d>>& holes)
-    {
-        if(holes.empty())
-            return false;
-
-        for(const auto& hole: holes)
-        {
-            if(!hole.empty())
-                return true;
-        }
-
-        return false;
-    }
-
     void GetSquareBounds2D(const vtkVector3d& planeCenter, const vtkVector3d& axisX, const vtkVector3d& axisY, const std::vector<vtkVector3d>& squarePoints,
                            double squareBounds[4])
     {
@@ -291,7 +278,7 @@ namespace Algorithm
     {
         InitializePolygon();
 
-        bool hasHoles = HasHoles(mInnerHoles);
+        bool hasHoles = Utility::HasElements(mInnerHoles);
         if(mDebug)
             printf("has holes = %s, holes cnt: %zu\n", hasHoles ? "True" : "False", mInnerHoles.size());
 

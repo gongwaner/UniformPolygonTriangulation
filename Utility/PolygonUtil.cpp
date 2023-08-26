@@ -14,14 +14,14 @@ namespace Utility
     vtkSmartPointer<vtkPolyData> GetPolygonPolyData(const std::vector<vtkVector3d>& polygonPoints)
     {
         auto points = vtkSmartPointer<vtkPoints>::New();
-        for (auto& point: polygonPoints)
+        for(auto& point: polygonPoints)
         {
             points->InsertNextPoint(point.GetData());
         }
 
         //create boundary
         vtkNew<vtkPolygon> polygon;
-        for (int i = 0; i < polygonPoints.size(); ++i)
+        for(int i = 0; i < polygonPoints.size(); ++i)
             polygon->GetPointIds()->InsertNextId(i);
 
         auto cellArray = vtkSmartPointer<vtkCellArray>::New();
@@ -40,7 +40,7 @@ namespace Utility
         double u, v;
         int result = vtkLine::Intersection(line1Start.GetData(), line1End.GetData(), line2Start.GetData(), line2End.GetData(), u, v);
 
-        if (result == vtkLine::IntersectionType::NoIntersect)
+        if(result == vtkLine::IntersectionType::NoIntersect)
             return false;
 
         //include both on line and intersect
@@ -55,14 +55,14 @@ namespace Utility
         vtkLine::Intersection(line1Start.GetData(), line1End.GetData(), line2Start.GetData(), line2End.GetData(), u, v);
         intersectionPoint = line1Start + u * (line1End - line1Start);
 
-        if ((abs(u) < epsilon || abs(u - 1.0) < epsilon) && (abs(v) < epsilon || abs(v - 1.0) < epsilon))
+        if((abs(u) <= epsilon || abs(u - 1.0) <= epsilon) && (abs(v) <= epsilon || abs(v - 1.0) <= epsilon))
             return LineIntersectionType::CommonEndPoint;
 
-        if (((abs(u) < epsilon || abs(u - 1.0) < epsilon) && (abs(v) >= epsilon && v <= 1.0 - epsilon)) ||
-            ((abs(v) < epsilon || abs(v - 1.0) < epsilon) && (abs(u) >= epsilon && u <= 1.0 - epsilon)))
+        if(((abs(u) <= epsilon || abs(u - 1.0) <= epsilon) && (v > epsilon && v < 1.0 - epsilon)) ||
+           ((abs(v) <= epsilon || abs(v - 1.0) <= epsilon) && (u > epsilon && u < 1.0 - epsilon)))
             return LineIntersectionType::EndPoint;
 
-        if ((abs(u) >= epsilon && u <= 1.0 - epsilon) && (abs(v) >= epsilon && v <= 1.0 - epsilon))
+        if(u > epsilon && u < 1 - epsilon && v > epsilon && v < 1 - epsilon)
             return LineIntersectionType::Intersection;
 
         return LineIntersectionType::NoIntersection;
@@ -82,7 +82,7 @@ namespace Utility
         vtkVector3d pt1;
         auto numOfPoints = polygonPoints.size();
 
-        for (unsigned int i = 0; i < numOfPoints; i++)
+        for(unsigned int i = 0; i < numOfPoints; i++)
         {
             pt1 = polygonPoints[(i + 1) % numOfPoints];
 
@@ -109,7 +109,7 @@ namespace Utility
         vtkTriangle::ComputeNormal(points[vid0].GetData(), points[vid1].GetData(), points[vid2].GetData(), triNormal);
 
         auto triangle = vtkSmartPointer<vtkTriangle>::New();
-        if (vtkVector3d(triNormal).Dot(planeNormal) < 0)
+        if(vtkVector3d(triNormal).Dot(planeNormal) < 0)
         {
             triangle->GetPointIds()->SetId(0, vid0);
             triangle->GetPointIds()->SetId(1, vid1);
