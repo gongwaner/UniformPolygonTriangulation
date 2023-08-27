@@ -115,6 +115,7 @@ namespace Algorithm
         int end2 = (i > 0) ? i - 1 : n - 1;
 
         //check intersection between (i,j) and all polygon edges
+        //TODO: corner case: if (i,j) and (k,k+1) are coplanar and intersect one of (i,j) is in middle of line, this is a valid diagonal
         for(int k = begin1; k < end1; ++k)
         {
             if(Utility::LineIntersects(mPolygonPoints[i], mPolygonPoints[j], mPolygonPoints[k], mPolygonPoints[k + 1]))

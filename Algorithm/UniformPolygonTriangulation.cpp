@@ -57,17 +57,7 @@ namespace Algorithm
         for(const auto& polyPnt: polygonPoints)
         {
             //point is one of the square point. consider this outside square
-            bool epsilonEqualSquare = false;
-            for(const auto& squarePnt: squarePoints)
-            {
-                if(Utility::EpsilonEqual(polyPnt, squarePnt, epsilon))
-                {
-                    epsilonEqualSquare = true;
-                    break;
-                }
-            }
-
-            if(epsilonEqualSquare)
+            if(Utility::EpsilonContains(squarePoints, polyPnt))
                 continue;
 
             //local projection
@@ -76,8 +66,8 @@ namespace Algorithm
             double yProj = cp.Dot(axisY);
 
             //point on square edge
-            if(abs(xProj - squareBounds[0]) < epsilon || abs(xProj - squareBounds[1]) < epsilon || abs(yProj - squareBounds[2]) < epsilon ||
-               abs(yProj - squareBounds[3]) < epsilon)
+            if(abs(xProj - squareBounds[0]) < epsilon || abs(xProj - squareBounds[1]) < epsilon ||
+               abs(yProj - squareBounds[2]) < epsilon || abs(yProj - squareBounds[3]) < epsilon)
             {
                 continue;
             }
@@ -92,24 +82,13 @@ namespace Algorithm
         return true;
     }
 
-    bool EpsilonEqualPolygonPoints(const std::vector<vtkVector3d>& polygonPoints, const vtkVector3d& point, const double epsilon = 1e-6)
-    {
-        for(const auto& p: polygonPoints)
-        {
-            if(Utility::EpsilonEqual(p, point, epsilon))
-                return true;
-        }
-
-        return false;
-    }
-
     bool AllPointsInPolygon(const std::vector<vtkVector3d>& polygonPoints, const std::vector<double>& polygonPointsData2d, const vtkVector3d& planeCenter,
                             const vtkVector3d& axisX, const vtkVector3d& axisY, double polygonBounds[6], const std::vector<vtkVector3d>& points)
     {
         for(const auto& point: points)
         {
             //corner case: if point IS polygon point, it's considered inside polygon
-            if(EpsilonEqualPolygonPoints(polygonPoints, point))
+            if(Utility::EpsilonContains(polygonPoints, point))
                 continue;
 
             if(!Utility::PointInPolygon(polygonPoints.size(), polygonPointsData2d.data(), polygonBounds, planeCenter, axisX, axisY, point))
@@ -127,7 +106,7 @@ namespace Algorithm
         for(const auto& point: points)
         {
             //corner case: if point IS polygon point, it's considered outside polygon
-            if(EpsilonEqualPolygonPoints(polygonPoints, point))
+            if(Utility::EpsilonContains(polygonPoints, point))
                 continue;
 
             if(Utility::PointInPolygon(polygonPoints.size(), polygonPointsData2d.data(), polygonBounds, planeCenter, axisX, axisY, point))

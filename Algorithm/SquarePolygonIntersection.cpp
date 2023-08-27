@@ -253,20 +253,12 @@ namespace Algorithm
             vtkVector3d intersectionPoint;
             for(int i = 0; i < mSquarePoints.size(); ++i)
             {
-//                int squareLineStart = i;
-//                int squareLineEnd = (i + 1) % mSquarePoints.size();
-//                if (mInnerHoles.size() == 0 && isInsidePolygon[squareLineStart] && isInsidePolygon[squareLineEnd])//line within polygon
-//                    continue;
-
+                //TODO: if square edge is completely inside polygon there would be no intersection
                 for(int j = 0; j < mContourPolyLines.size(); ++j)
                 {
                     auto polyLine = mContourPolyLines[j];
 
-//                    //if line is completely inside square there would be no intersection
-//                    int polylineStart = polyLine.first;
-//                    int polylineEnd = polyLine.second;
-//                    if (isInsideSquare[polylineStart] && isInsideSquare[polylineEnd])
-//                        continue;
+                    //TODO: if line is completely inside square there would be no intersection
 
                     //TODO: if polyline end points are on lines of square, then intersection point would be polyline end points
                     if(LineIntersects(i, polyLine, intersectionPoint))
