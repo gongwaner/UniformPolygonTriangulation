@@ -39,7 +39,7 @@ void TestUniformTriangulation(const std::vector<vtkVector3d>& polygonPoints, con
     std::cout << "UniformPolygonTriangulation takes " << duration.count() << " ms" << std::endl;
 
     //visualization
-    vtkNew<vtkNamedColors> colors;
+    auto colors = vtkSmartPointer<vtkNamedColors>::New();
     std::vector<vtkSmartPointer<vtkActor>> actors;
     {
         //polygon
@@ -84,13 +84,13 @@ void TestUniformTriangulation(const std::vector<vtkVector3d>& polygonPoints, con
     }
 
     //rendering
-    vtkNew<vtkRenderer> renderer;
-    vtkNew<vtkRenderWindow> renderWindow;
+    auto renderer = vtkSmartPointer<vtkRenderer>::New();
+    auto renderWindow = vtkSmartPointer<vtkRenderWindow>::New();
     renderWindow->SetWindowName("Sphere");
     renderWindow->AddRenderer(renderer);
     renderWindow->SetSize(1200, 800);
 
-    vtkNew<vtkRenderWindowInteractor> renderWindowInteractor;
+    auto renderWindowInteractor = vtkSmartPointer<vtkRenderWindowInteractor>::New();
     renderWindowInteractor->SetRenderWindow(renderWindow);
 
     for(auto actor: actors)

@@ -172,7 +172,7 @@ namespace Algorithm
 
     void UniformPolygonTriangulation::InitializePlane()
     {
-        mPlaneCenter = Utility::GetAverageCenter(mPolygonPoints);
+        mPlaneCenter = Utility::GetAverage(mPolygonPoints);
 
         double axisX[3];
         double axisY[3];

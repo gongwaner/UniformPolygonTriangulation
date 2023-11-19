@@ -7,7 +7,8 @@
 
 namespace Utility
 {
-    vtkSmartPointer<vtkActor> GetPolyDataActor(vtkSmartPointer<vtkPolyDataMapper> mapper, vtkSmartPointer<vtkPolyData> polyData, const double* diffuseColor, const double alpha)
+    vtkSmartPointer<vtkActor> GetPolyDataActor(vtkSmartPointer<vtkPolyDataMapper> mapper, vtkSmartPointer<vtkPolyData> polyData, const double* diffuseColor,
+                                               const double alpha)
     {
         mapper->SetInputData(polyData);
 
@@ -29,7 +30,7 @@ namespace Utility
 
     vtkSmartPointer<vtkActor> GetPointActor(const vtkVector3d& point, const float pointSize, const double* pointColor)
     {
-        vtkNew<vtkPoints> points;
+        auto points = vtkSmartPointer<vtkPoints>::New();
         points->InsertNextPoint(point[0], point[1], point[2]);
         auto pointPolyData = GetPointsPolyData(points);
 
@@ -41,7 +42,7 @@ namespace Utility
 
     vtkSmartPointer<vtkActor> GetPointsActor(const std::vector<vtkVector3d>& pointsVector, const float pointSize, const double* pointColor)
     {
-        vtkNew<vtkPoints> points;
+        auto points = vtkSmartPointer<vtkPoints>::New();
         for(const auto& point: pointsVector)
             points->InsertNextPoint(point[0], point[1], point[2]);
         auto pointPolyData = GetPointsPolyData(points);

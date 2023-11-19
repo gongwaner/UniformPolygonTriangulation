@@ -2,13 +2,11 @@
 
 #include <vtkPLYReader.h>
 #include <vtkPLYWriter.h>
-#include <vtkXMLPolyDataReader.h>
 #include <vtkOBJReader.h>
 #include <vtkOBJWriter.h>
 #include <vtkSTLReader.h>
 #include <vtkSTLWriter.h>
 #include <vtkPolyDataReader.h>
-#include <vtkBYUReader.h>
 
 #include <iostream>
 #include <fstream>
@@ -18,95 +16,115 @@
 
 namespace Utility
 {
+    bool PathExist(const char* fileDir)
+    {
+        auto path = std::filesystem::path(fileDir);
+        if(!std::filesystem::exists(path))
+        {
+            std::cerr << "ERROR: Directory " << path.string() << " does not exist!" << std::endl;
+            return false;
+        }
+
+        return true;
+    }
+
+    bool IsValidDirectory(const char* fileDir)
+    {
+        auto path = std::filesystem::path(fileDir);
+        auto parentDir = path.parent_path();
+        if(!std::filesystem::is_directory(parentDir))
+        {
+            std::cerr << "ERROR: Directory " << parentDir.string() << " does not exist!" << std::endl;
+            return false;
+        }
+
+        return true;
+    }
+
     vtkSmartPointer<vtkPolyData> ReadPolyData(const char* fileDir)
     {
+        if(!PathExist(fileDir))
+            return vtkSmartPointer<vtkPolyData>::New();
+
         vtkSmartPointer<vtkPolyData> polyData;
         auto extension = std::filesystem::path(fileDir).extension().string();
 
         if(extension == ".ply")
         {
-            vtkNew<vtkPLYReader> reader;
-            reader->SetFileName(fileDir);
-            reader->Update();
-            polyData = reader->GetOutput();
-        }
-        else if(extension == ".vtp")
-        {
-            vtkNew<vtkXMLPolyDataReader> reader;
+            auto reader = vtkSmartPointer<vtkPLYReader>::New();
             reader->SetFileName(fileDir);
             reader->Update();
             polyData = reader->GetOutput();
         }
         else if(extension == ".obj")
         {
-            vtkNew<vtkOBJReader> reader;
+            auto reader = vtkSmartPointer<vtkOBJReader>::New();
             reader->SetFileName(fileDir);
             reader->Update();
             polyData = reader->GetOutput();
         }
         else if(extension == ".stl")
         {
-            vtkNew<vtkSTLReader> reader;
+            auto reader = vtkSmartPointer<vtkSTLReader>::New();
             reader->SetFileName(fileDir);
             reader->Update();
             polyData = reader->GetOutput();
         }
         else if(extension == ".vtk")
         {
-            vtkNew<vtkPolyDataReader> reader;
+            auto reader = vtkSmartPointer<vtkPolyDataReader>::New();
             reader->SetFileName(fileDir);
-            reader->Update();
-            polyData = reader->GetOutput();
-        }
-        else if(extension == ".g")
-        {
-            vtkNew<vtkBYUReader> reader;
-            reader->SetGeometryFileName(fileDir);
             reader->Update();
             polyData = reader->GetOutput();
         }
         else
         {
-            std::cout << "unsupported file extension" << std::endl;
+            std::cerr << "ERROR: unsupported file extension" << std::endl;
         }
         return polyData;
     }
 
     void WritePolyData(const char* fileDir, vtkSmartPointer<vtkPolyData> polyData)
     {
+        if(!IsValidDirectory(fileDir))
+            return;
+
         auto extension = std::filesystem::path(fileDir).extension().string();
 
         if(extension == ".ply")
         {
-            vtkNew<vtkPLYWriter> writer;
+            auto writer = vtkSmartPointer<vtkPLYWriter>::New();
             writer->SetFileName(fileDir);
             writer->SetInputData(polyData);
             writer->Write();
         }
         else if(extension == ".obj")
         {
-            vtkNew<vtkOBJWriter> writer;
+            auto writer = vtkSmartPointer<vtkOBJWriter>::New();
             writer->SetFileName(fileDir);
             writer->SetInputData(polyData);
             writer->Write();
         }
         else if(extension == ".stl")
         {
-            vtkNew<vtkSTLWriter> writer;
+            auto writer = vtkSmartPointer<vtkSTLWriter>::New();
             writer->SetFileName(fileDir);
             writer->SetInputData(polyData);
             writer->Write();
         }
         else
         {
-            std::cout << "unsupported file extension" << std::endl;
+            std::cerr << "ERROR: unsupported file extension" << std::endl;
         }
     }
 
-    std::vector<vtkVector3d> ReadVectorFromFile(const char* dir)
+    std::vector<vtkVector3d> ReadVectorFromFile(const char* fileDir)
     {
+        if(!PathExist(fileDir))
+            return {};
+
         std::vector<vtkVector3d> vector;
-        std::ifstream inFile(dir);
+        std::ifstream inFile(fileDir);
         std::string line;
 
         while(std::getline(inFile, line))
@@ -122,10 +140,13 @@ namespace Utility
         return vector;
     }
 
-    void WriteVectorToFile(const std::vector<vtkVector3d>& vector, const char* dir)
+    void WriteVectorToFile(const std::vector<vtkVector3d>& vector, const char* fileDir)
     {
+        if(!IsValidDirectory(fileDir))
+            return;
+
         std::ofstream fs;
-        fs.open(dir);
+        fs.open(fileDir);
         for(const auto& value: vector)
         {
             fs << value[0] << " " << value[1] << " " << value[2] << std::endl;

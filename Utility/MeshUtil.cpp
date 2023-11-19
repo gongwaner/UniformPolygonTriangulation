@@ -9,18 +9,18 @@
 
 namespace Utility
 {
-    vtkVector3d GetAverageCenter(const std::vector<vtkVector3d>& points)
+    vtkVector3d GetAverage(const std::vector<vtkVector3d>& data)
     {
-        vtkVector3d avgCenter(0, 0, 0);
-        for(const auto& point: points)
+        vtkVector3d avg(0, 0, 0);
+        for(const auto& value: data)
         {
-            avgCenter += point;
+            avg += value;
         }
 
         for(int i = 0; i < 3; ++i)
-            avgCenter[i] /= (double) points.size();
+            avg[i] /= (double) data.size();
 
-        return avgCenter;
+        return avg;
     }
 
     vtkSmartPointer<vtkPolyData> GetCombinedPolyData(const std::vector<vtkSmartPointer<vtkPolyData>>& meshes)

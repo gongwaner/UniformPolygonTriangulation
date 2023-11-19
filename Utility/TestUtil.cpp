@@ -15,13 +15,13 @@ namespace TestUtil
         actors.push_back(polydataActor);
     }
 
-    void AddPoint(const vtkVector3d& point, double pointSize, const double* color, std::vector<vtkSmartPointer<vtkActor>>& actors)
+    void AddPoint(const vtkVector3d& point, const float pointSize, const double* color, std::vector<vtkSmartPointer<vtkActor>>& actors)
     {
         auto pointActor = Utility::GetPointActor(point, pointSize, color);
         actors.push_back(pointActor);
     }
 
-    void AddPoints(const std::vector<vtkVector3d>& points, double pointSize, const double* color, std::vector<vtkSmartPointer<vtkActor>>& actors)
+    void AddPoints(const std::vector<vtkVector3d>& points, const float pointSize, const double* color, std::vector<vtkSmartPointer<vtkActor>>& actors)
     {
         auto pointsActor = Utility::GetPointsActor(points, pointSize, color);
         actors.push_back(pointsActor);

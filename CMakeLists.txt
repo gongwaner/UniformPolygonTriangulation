@@ -38,14 +38,23 @@ endif ()
 
 # Prevent a "command line is too long" failure in Windows.
 set(CMAKE_NINJA_FORCE_RESPONSE_FILE "ON" CACHE BOOL "Force Ninja to use response files.")
-add_executable(UniformPolygonTriangulation MACOSX_BUNDLE main.cxx
-        Algorithm/OptimalPolygonTriangulation.cpp Algorithm/SquarePolygonIntersection.cpp Algorithm/UniformPolygonTriangulation.cpp
-        Utility/ActorUtil.cpp Utility/CommonUtil.cpp Utility/GeometricObjectUtil.cpp Utility/IOUtil.cpp
-        Utility/MeshUtil.cpp Utility/PolygonUtil.cpp Utility/TestUtil.cpp)
-target_link_libraries(UniformPolygonTriangulation PRIVATE ${VTK_LIBRARIES})
+
+add_executable(${PROJECT_NAME} MACOSX_BUNDLE main.cxx
+        Algorithm/OptimalPolygonTriangulation.cpp
+        Algorithm/SquarePolygonIntersection.cpp
+        Algorithm/UniformPolygonTriangulation.cpp
+        Utility/ActorUtil.cpp
+        Utility/CommonUtil.cpp
+        Utility/GeometricObjectUtil.cpp
+        Utility/IOUtil.cpp
+        Utility/MeshUtil.cpp
+        Utility/PolygonUtil.cpp
+        Utility/TestUtil.cpp)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE ${VTK_LIBRARIES})
 
 # vtk_module_autoinit is needed
 vtk_module_autoinit(
-        TARGETS UniformPolygonTriangulation
+        TARGETS ${PROJECT_NAME}
         MODULES ${VTK_LIBRARIES}
 )

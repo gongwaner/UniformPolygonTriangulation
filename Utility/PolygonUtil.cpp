@@ -20,7 +20,7 @@ namespace Utility
         }
 
         //create boundary
-        vtkNew<vtkPolygon> polygon;
+        auto polygon = vtkSmartPointer<vtkPolygon>::New();
         for(int i = 0; i < polygonPoints.size(); ++i)
             polygon->GetPointIds()->InsertNextId(i);
 
@@ -43,7 +43,6 @@ namespace Utility
         if(result == vtkLine::IntersectionType::NoIntersect)
             return false;
 
-        //include both on line and intersect
         return true;
     }
 
@@ -68,10 +67,6 @@ namespace Utility
         return LineIntersectionType::NoIntersection;
     }
 
-    /**
-     * compute normal for any kind of polygon. as vtkPolygon::ComputeNormal only works for convex polygon
-     * ref: https://gitlab.kitware.com/vtk/vtk/-/issues/11988
-     */
     void ComputePolygonNormal(const std::vector<vtkVector3d>& polygonPoints, double normal[3])
     {
         normal[0] = 0;
@@ -120,11 +115,6 @@ namespace Utility
         return triangle;
     }
 
-    /**
-     * check if a point if within polygon by projecting it to 2d plane then perform check.
-     * Directly call vtkPolygon::PointInPolygon() will fail for cases where point is epsilon larger in z than plane
-     * note: This function returns TRUE if query point is polygon point
-     */
     bool PointInPolygon(const int numOfPoints, const double* polygonPoints2d, double polygonBounds[6],
                         const vtkVector3d& planeCenter, const vtkVector3d& axisX, const vtkVector3d& axisY,
                         const vtkVector3d& point)

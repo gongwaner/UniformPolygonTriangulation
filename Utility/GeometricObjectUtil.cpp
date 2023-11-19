@@ -11,9 +11,10 @@ namespace Utility
 {
     vtkSmartPointer<vtkPolyData> GetPointsPolyData(vtkSmartPointer<vtkPoints> points)
     {
-        vtkNew<vtkPolyData> pointsPolyData;
+        auto pointsPolyData = vtkSmartPointer<vtkPolyData>::New();
         pointsPolyData->SetPoints(points);
-        vtkNew<vtkVertexGlyphFilter> vertexFilter;
+
+        auto vertexFilter = vtkSmartPointer<vtkVertexGlyphFilter>::New();
         vertexFilter->SetInputData(pointsPolyData);
         vertexFilter->Update();
 
@@ -33,7 +34,7 @@ namespace Utility
 
     vtkSmartPointer<vtkPolyData> GetLinePolyData(const vtkVector3d& start, const vtkVector3d& end)
     {
-        vtkNew<vtkLineSource> lineSource;
+        auto lineSource = vtkSmartPointer<vtkLineSource>::New();
         lineSource->SetPoint1(start.GetData());
         lineSource->SetPoint2(end.GetData());
         lineSource->Update();

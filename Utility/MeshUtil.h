@@ -9,6 +9,6 @@
 
 namespace Utility
 {
-    vtkVector3d GetAverageCenter(const std::vector<vtkVector3d>& points);
+    vtkVector3d GetAverage(const std::vector<vtkVector3d>& data);
     vtkSmartPointer<vtkPolyData> GetCombinedPolyData(const std::vector<vtkSmartPointer<vtkPolyData>>& meshes);
 }
