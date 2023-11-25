@@ -17,24 +17,31 @@ namespace Algorithm
     public:
         SquarePolygonIntersection() = default;
         ~SquarePolygonIntersection() = default;
+
         void SetPolygonPoints(const std::vector<vtkVector3d>& polygonPoints);
         void SetHoles(const std::vector<std::vector<vtkVector3d>>& holes);
         void SetSquarePoints(const std::vector<vtkVector3d>& squarePoints);
         void SetPlane(const vtkVector3d& planeCenter, const vtkVector3d& axisX, const vtkVector3d& axisY);
         void SetPrecision(double epsilon);
+
         void CalculateIntersectedPolygons();
+
         std::vector<std::vector<vtkVector3d>> GetIntersectedPolygon() const;
+
         bool mDebug = false;
 
     private:
         void InitializePolygon();
         void InitializeHoles();
         void InitializeSquare();
+
         bool PointInSquare(const vtkVector3d& point) const;
         bool LineIntersects(int squareLineID, const std::pair<int, int>& polyLine, vtkVector3d& intersectionPoint) const;
         bool HasIntersection();
+
         void SetUpPolygonIntersection(const std::unordered_map<int, std::vector<vtkVector3d>>& polygonMap);
         void SetUpSquareIntersection(const std::unordered_map<int, std::vector<vtkVector3d>>& squareMap);
+
         int GetNextPolygonIndex(int index) const;
         int GetNextIntersectionPolygonIndex(int index) const;
 

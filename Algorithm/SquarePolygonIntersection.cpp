@@ -1,29 +1,17 @@
 #include "SquarePolygonIntersection.h"
-#include "../Utility/PolygonUtil.h"
-#include "../Utility/CommonUtil.h"
 
 #include <vtkBoundingBox.h>
 #include <vtkVectorOperators.h>
 
 #include <queue>
 
+#include "../Utility/PolygonUtil.h"
+#include "../Utility/CommonUtil.h"
+
 
 namespace Algorithm
 {
     const int INVALID_POLYGON_INDEX = -1;
-
-    template<typename T, typename F>
-    std::vector<size_t> SortIndices(const std::vector<T>& v, F comparator)
-    {
-        // initialize original index locations
-        std::vector<size_t> idx(v.size());
-        for(size_t i = 0; i < v.size(); ++i)
-            idx[i] = i;
-
-        std::sort(idx.begin(), idx.end(), comparator);
-
-        return idx;
-    }
 
     void SortIntersectionPoints(std::vector<vtkVector3d>& points, const vtkVector3d& start, const vtkVector3d& end)
     {
@@ -43,7 +31,7 @@ namespace Algorithm
             return tVec[i1] < tVec[i2];
         };
 
-        auto sortedIndices = SortIndices(tVec, comparator);
+        auto sortedIndices = Utility::SortIndices(tVec, comparator);
         auto temp = points;
         for(int i = 0; i < points.size(); ++i)
         {

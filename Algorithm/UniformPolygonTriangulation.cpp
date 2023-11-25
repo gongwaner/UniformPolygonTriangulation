@@ -1,15 +1,16 @@
 #include "UniformPolygonTriangulation.h"
+
+#include <vtkPolygon.h>
+#include <vtkVectorOperators.h>
+#include <vtkTriangle.h>
+#include <vtkCleanPolyData.h>
+
 #include "SquarePolygonIntersection.h"
 #include "OptimalPolygonTriangulation.h"
 #include "../Utility/GeometricObjectUtil.h"
 #include "../Utility/MeshUtil.h"
 #include "../Utility/PolygonUtil.h"
 #include "../Utility/CommonUtil.h"
-
-#include <vtkPolygon.h>
-#include <vtkVectorOperators.h>
-#include <vtkTriangle.h>
-#include <vtkCleanPolyData.h>
 
 
 namespace Algorithm
@@ -394,7 +395,7 @@ namespace Algorithm
                     if(!subPolygon.empty())
                     {
                         if(mDebug)
-                            std::cout << "sub polygon points cnt = " << subPolygon.size() << std::endl;
+                            printf("sub polygon points cnt = %zu\n", subPolygon.size());
 
                         triangulation.SetPolygonPoints(subPolygon);
                         triangulation.Triangulate();

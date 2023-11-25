@@ -44,10 +44,13 @@ namespace Utility
     vtkSmartPointer<vtkPolyData> ReadPolyData(const char* fileDir)
     {
         if(!PathExist(fileDir))
-            return vtkSmartPointer<vtkPolyData>::New();
+            return nullptr;
+
+        auto path = std::filesystem::path(fileDir);
+        std::cout << "Reading " << path << std::endl;
 
         vtkSmartPointer<vtkPolyData> polyData;
-        auto extension = std::filesystem::path(fileDir).extension().string();
+        auto extension = std::filesystem::path(fileDir).extension();
 
         if(extension == ".ply")
         {
@@ -81,15 +84,19 @@ namespace Utility
         {
             std::cerr << "ERROR: unsupported file extension" << std::endl;
         }
+
+        printf("Poly data vertices cnt: %lld, cells cnt: %lld\n", polyData->GetNumberOfPoints(), polyData->GetNumberOfCells());
+
         return polyData;
     }
 
-    void WritePolyData(const char* fileDir, vtkSmartPointer<vtkPolyData> polyData)
+    void WritePolyData(const char* fileDir, vtkPolyData* polyData)
     {
         if(!IsValidDirectory(fileDir))
             return;
 
-        auto extension = std::filesystem::path(fileDir).extension().string();
+        auto path = std::filesystem::path(fileDir);
+        auto extension = path.extension();
 
         if(extension == ".ply")
         {
@@ -116,6 +123,30 @@ namespace Utility
         {
             std::cerr << "ERROR: unsupported file extension" << std::endl;
         }
+
+        std::cout << "Poly data is written to " << path << std::endl;
+    }
+
+    void WriteColorPolyData(const char* fileDir, vtkPolyData* polyData)
+    {
+        if(!IsValidDirectory(fileDir))
+            return;
+
+        auto path = std::filesystem::path(fileDir);
+        auto extension = path.extension();
+        if(extension != ".ply")
+        {
+            std::cerr << "ERROR: wrong extension. Should be .ply" << std::endl;
+            return;
+        }
+
+        auto plyWriter = vtkSmartPointer<vtkPLYWriter>::New();
+        plyWriter->SetFileName(fileDir);
+        plyWriter->SetInputData(polyData);
+        plyWriter->SetArrayName("Colors"); //set colors
+        plyWriter->Write();
+
+        std::cout << "Saved colored polydata to " << path << std::endl;
     }
 
     std::vector<vtkVector3d> ReadVectorFromFile(const char* fileDir)

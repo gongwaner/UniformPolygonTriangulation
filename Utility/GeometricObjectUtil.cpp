@@ -9,7 +9,7 @@
 
 namespace Utility
 {
-    vtkSmartPointer<vtkPolyData> GetPointsPolyData(vtkSmartPointer<vtkPoints> points)
+    vtkSmartPointer<vtkPolyData> GetPointsPolyData(vtkPoints* points)
     {
         auto pointsPolyData = vtkSmartPointer<vtkPolyData>::New();
         pointsPolyData->SetPoints(points);

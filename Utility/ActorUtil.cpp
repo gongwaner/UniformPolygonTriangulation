@@ -1,13 +1,14 @@
 #include "ActorUtil.h"
-#include "GeometricObjectUtil.h"
 
 #include <vtkPoints.h>
 #include <vtkProperty.h>
 
+#include "GeometricObjectUtil.h"
+
 
 namespace Utility
 {
-    vtkSmartPointer<vtkActor> GetPolyDataActor(vtkSmartPointer<vtkPolyDataMapper> mapper, vtkSmartPointer<vtkPolyData> polyData, const double* diffuseColor,
+    vtkSmartPointer<vtkActor> GetPolyDataActor(vtkPolyDataMapper* mapper, vtkPolyData* polyData, const double* diffuseColor,
                                                const double alpha)
     {
         mapper->SetInputData(polyData);
@@ -22,7 +23,7 @@ namespace Utility
         return actor;
     }
 
-    vtkSmartPointer<vtkActor> GetPolyDataActor(vtkSmartPointer<vtkPolyData> polyData, const double* diffuseColor, const double alpha)
+    vtkSmartPointer<vtkActor> GetPolyDataActor(vtkPolyData* polyData, const double* diffuseColor, const double alpha)
     {
         auto mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
         return GetPolyDataActor(mapper, polyData, diffuseColor, alpha);

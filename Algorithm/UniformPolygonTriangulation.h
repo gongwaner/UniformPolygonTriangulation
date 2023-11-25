@@ -15,7 +15,7 @@ namespace Algorithm
      *
      * works by introducing new vertices.
      * Input:
-     * ordered polygon points. The polygon CANNOT self intersect.
+     * ordered polygon points. The polygon should NOT self intersect.
      * If there are inner holes, pass inner holes in opposite orientation as outer contour.
      *
      * General algorithm:
@@ -32,11 +32,13 @@ namespace Algorithm
     public:
         UniformPolygonTriangulation() = default;
         ~UniformPolygonTriangulation() = default;
+
         void SetPolygonPoints(const std::vector<vtkVector3d>& polygonPoints);
         void SetHoles(const std::vector<std::vector<vtkVector3d>>& holes);
         void SetNormal(const vtkVector3d& planeNormal);
         void SetSquareSize(const double size);
         void Triangulate();
+
         vtkSmartPointer<vtkPolyData> GetTriangulatedPolygon() const;
         vtkVector3d GetAxisX() const;
 
