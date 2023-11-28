@@ -36,7 +36,7 @@ namespace Algorithm
         void SetPolygonPoints(const std::vector<vtkVector3d>& polygonPoints);
         void SetHoles(const std::vector<std::vector<vtkVector3d>>& holes);
         void SetNormal(const vtkVector3d& planeNormal);
-        void SetSquareSize(const double size);
+        void SetSquareSize(double size);
         void Triangulate();
 
         vtkSmartPointer<vtkPolyData> GetTriangulatedPolygon() const;

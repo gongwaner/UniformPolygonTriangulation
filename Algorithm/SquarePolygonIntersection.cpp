@@ -70,7 +70,7 @@ namespace Algorithm
         mUpdateHoles = true;
     }
 
-    void SquarePolygonIntersection::SetPrecision(double epsilon)
+    void SquarePolygonIntersection::SetPrecision(const double epsilon)
     {
         mEpsilon = epsilon;
     }
@@ -464,9 +464,8 @@ namespace Algorithm
         //calculate intersections
         std::set<vtkVector3d> visited;
 
-        for(int i = 0; i < mEnterIndices.size(); ++i)
+        for(int startIndex : mEnterIndices)
         {
-            int startIndex = mEnterIndices[i];
             auto startPoint = mPolygonVertices[startIndex];
             if(visited.count(startPoint))//already visited the point
                 continue;

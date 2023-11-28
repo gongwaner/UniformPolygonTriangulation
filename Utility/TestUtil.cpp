@@ -8,7 +8,7 @@
 
 namespace TestUtil
 {
-    void AddPolyData(vtkSmartPointer<vtkPolyData> polyData, const double* color, std::vector<vtkSmartPointer<vtkActor>>& actors, bool wireFrame)
+    void AddPolyData(const vtkSmartPointer<vtkPolyData>& polyData, const double* color, std::vector<vtkSmartPointer<vtkActor>>& actors, bool wireFrame)
     {
         auto polydataActor = Utility::GetPolyDataActor(polyData, color);
         if(wireFrame)
@@ -28,7 +28,7 @@ namespace TestUtil
         actors.push_back(pointsActor);
     }
 
-    void AddVector(const vtkVector3d& start, const vtkVector3d& end, double lineWidth, const double* color, std::vector<vtkSmartPointer<vtkActor>>& actors)
+    void AddVector(const vtkVector3d& start, const vtkVector3d& end, const float lineWidth, const double* color, std::vector<vtkSmartPointer<vtkActor>>& actors)
     {
         auto vectorActor = Utility::GetPolyDataActor(Utility::GetLinePolyData(start, end), color);
         vectorActor->GetProperty()->SetLineWidth(lineWidth);

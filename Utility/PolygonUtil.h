@@ -26,7 +26,7 @@ namespace Utility
 
     LineIntersectionType GetLineIntersectionType(const vtkVector3d& line1Start, const vtkVector3d& line1End,
                                                  const vtkVector3d& line2Start, const vtkVector3d& line2End,
-                                                 vtkVector3d& intersectionPoint, const double epsilon = 1e-6);
+                                                 vtkVector3d& intersectionPoint, double epsilon = 1e-6);
 
     /**
      * compute normal for any kind of polygon. as vtkPolygon::ComputeNormal only works for convex polygon
@@ -49,7 +49,7 @@ namespace Utility
      * @param axisY local Y axis
      * @param point point to query
      */
-    bool PointInPolygon(const int numOfPoints, const double* polygonPoints2d, double polygonBounds[6],
+    bool PointInPolygon(int numOfPoints, const double* polygonPoints2d, double polygonBounds[6],
                         const vtkVector3d& planeCenter, const vtkVector3d& axisX, const vtkVector3d& axisY,
                         const vtkVector3d& point);
 }

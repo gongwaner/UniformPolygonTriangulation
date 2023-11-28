@@ -93,7 +93,7 @@ void TestUniformTriangulation(const std::vector<vtkVector3d>& polygonPoints, con
     auto renderWindowInteractor = vtkSmartPointer<vtkRenderWindowInteractor>::New();
     renderWindowInteractor->SetRenderWindow(renderWindow);
 
-    for(auto actor: actors)
+    for(const auto& actor: actors)
         renderer->AddActor(actor);
     renderer->SetBackground(colors->GetColor3d("Silver").GetData());
 
