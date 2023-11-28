@@ -2,10 +2,6 @@ cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 
-if (APPLE)
-    set(CMAKE_OSX_ARCHITECTURES arm64)
-endif ()
-
 project(UniformPolygonTriangulation)
 
 find_package(VTK COMPONENTS
