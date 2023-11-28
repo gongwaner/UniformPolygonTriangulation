@@ -29,9 +29,9 @@ This algorithm adds new vertices during triangulation process. Works for both in
 
 <br/>**Build**
 <br/>The code runs on both win and mac platform.
-<br/>Note: If you are using Mac Intel chip, disable/comment out the<br/> 
+<br/>Note: If you are using Mac M1/M2 chip and encountered build error, try add<br/> 
     `set(CMAKE_OSX_ARCHITECTURES arm64)`
-<br/>command in CMakeLists.txt as intel uses x86_64 architecture.
+<br/>command in CMakeLists.txt.
 
 <br/>**Screenshot**
 - polygon without inner hole
