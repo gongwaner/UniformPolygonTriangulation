@@ -15,8 +15,8 @@
 
 namespace Algorithm
 {
-    void GetSquareBounds2D(const vtkVector3d& planeCenter, const vtkVector3d& axisX, const vtkVector3d& axisY, const std::vector<vtkVector3d>& squarePoints,
-                           double squareBounds[4])
+    void GetSquareBounds2D(const vtkVector3d& planeCenter, const vtkVector3d& axisX, const vtkVector3d& axisY,
+                           const std::vector<vtkVector3d>& squarePoints, double squareBounds[4])
     {
         double minXProj = DBL_MAX;
         double maxXProj = -DBL_MAX;
@@ -84,7 +84,7 @@ namespace Algorithm
     }
 
     bool AllPointsInPolygon(const std::vector<vtkVector3d>& polygonPoints, const std::vector<double>& polygonPointsData2d, const vtkVector3d& planeCenter,
-                            const vtkVector3d& axisX, const vtkVector3d& axisY, double polygonBounds[6], const std::vector<vtkVector3d>& points)
+                            const vtkVector3d& axisX, const vtkVector3d& axisY, const double polygonBounds[6], const std::vector<vtkVector3d>& points)
     {
         for(const auto& point: points)
         {
@@ -102,7 +102,7 @@ namespace Algorithm
     }
 
     bool AllPointsOutsidePolygon(const std::vector<vtkVector3d>& polygonPoints, const std::vector<double>& polygonPointsData2d, const vtkVector3d& planeCenter,
-                                 const vtkVector3d& axisX, const vtkVector3d& axisY, double polygonBounds[6], const std::vector<vtkVector3d>& points)
+                                 const vtkVector3d& axisX, const vtkVector3d& axisY, const double polygonBounds[6], const std::vector<vtkVector3d>& points)
     {
         for(const auto& point: points)
         {
@@ -144,31 +144,38 @@ namespace Algorithm
         edgeLengths.push_back((p2 - p1).Norm());
         edgeLengths.push_back((p0 - p2).Norm());
 
-        return *std::max_element(edgeLengths.begin(), edgeLengths.end()) / *std::min_element(edgeLengths.begin(), edgeLengths.end());
+        return *std::max_element(edgeLengths.begin(), edgeLengths.end()) /
+               *std::min_element(edgeLengths.begin(), edgeLengths.end());
     }
 
     void UniformPolygonTriangulation::SetPolygonPoints(const std::vector<vtkVector3d>& polygonPoints)
     {
         mPolygonPoints = polygonPoints;
+        mUpdateCalculation = true;
     }
 
     void UniformPolygonTriangulation::SetHoles(const std::vector<std::vector<vtkVector3d>>& holes)
     {
         mInnerHoles = holes;
+        mUpdateCalculation = true;
     }
 
     void UniformPolygonTriangulation::SetNormal(const vtkVector3d& planeNormal)
     {
         mNormal = planeNormal;
-        InitializePlane();
+        mUpdateCalculation = true;
     }
 
     void UniformPolygonTriangulation::SetSquareSize(const double size)
     {
         if(size <= 0)
+        {
+            std::cerr << "square size should be greater than 0!" << std::endl;
             return;
+        }
 
         mLength = size;
+        mUpdateCalculation = true;
     }
 
     void UniformPolygonTriangulation::InitializePlane()
@@ -254,23 +261,8 @@ namespace Algorithm
         }
     }
 
-    void UniformPolygonTriangulation::Triangulate()
+    vtkSmartPointer<vtkPolyData> UniformPolygonTriangulation::GetTriangulatedPolygon() const
     {
-        InitializePolygon();
-
-        bool hasHoles = Utility::HasElements(mInnerHoles);
-        if(mDebug)
-            printf("has holes = %s, holes cnt: %zu\n", hasHoles ? "True" : "False", mInnerHoles.size());
-
-        if(hasHoles)
-            InitializeHoles();
-
-        if(mLength == 0)
-            mLength = std::min(mBoundingBoxWidth, mBoundingBoxHeight) * 0.15;
-
-        if(mDebug)
-            printf("bounding box width = %f, height = %f, pixel size = %f\n", mBoundingBoxWidth, mBoundingBoxHeight, mLength);
-
         const int squarePntsCnt = 4;
 
         //make a square whose orientation is same as polygon
@@ -322,7 +314,7 @@ namespace Algorithm
 
                     if(AllPointsInPolygon(mPolygonPoints, mPolygonPointsData2d, mPlaneCenter, mAxisX, mAxisY, mPolygonBounds, squarePoints))
                     {
-                        if(!hasHoles)
+                        if(!mHasHoles)
                         {
                             //square completely inside polygon
                             subTriangulationVector.push_back(DivideSquareByDiagonal(squarePoints, mNormal));
@@ -331,7 +323,7 @@ namespace Algorithm
                         else
                         {
                             //check if square is completely inside any of the hole
-                            //ie. all hole points outside square and all square points inside hole
+                            //ie.all hole points outside square and all square points inside hole
                             bool insideOneOfHoles = false;
                             for(int holeID = 0; holeID < mInnerHoles.size(); ++holeID)
                             {
@@ -408,23 +400,55 @@ namespace Algorithm
         }
 
         auto combinedPolyData = Utility::GetCombinedPolyData(subTriangulationVector);
+        if(mDebug)
+        {
+            printf("combined poly data points cnt=%lli, cells cnt = %lli\n", combinedPolyData->GetNumberOfPoints(),
+                   combinedPolyData->GetNumberOfCells());
+        }
 
         //merge duplicate points
         auto cleanPolyData = vtkSmartPointer<vtkCleanPolyData>::New();
         cleanPolyData->SetInputData(combinedPolyData);
         cleanPolyData->ConvertPolysToLinesOff();
         cleanPolyData->Update();
-        mTriangulatedPolygon = cleanPolyData->GetOutput();
+
+        return cleanPolyData->GetOutput();
+    }
+
+    void UniformPolygonTriangulation::Triangulate()
+    {
+        if(!mUpdateCalculation)
+            return;
+
+        mUpdateCalculation = false;
+
+        InitializePlane();
+        InitializePolygon();
+
+        mHasHoles = Utility::HasElements(mInnerHoles);
+        if(mDebug)
+            printf("has holes = %s, holes cnt: %zu\n", mHasHoles ? "True" : "False", mInnerHoles.size());
+
+        if(mHasHoles)
+            InitializeHoles();
+
+        if(mLength == 0)
+            mLength = std::min(mBoundingBoxWidth, mBoundingBoxHeight) * 0.15;
+
+        if(mDebug)
+            printf("bounding box width = %f, height = %f, pixel size = %f\n", mBoundingBoxWidth, mBoundingBoxHeight,
+                   mLength);
+
+        mTriangulatedPolygon = GetTriangulatedPolygon();
 
         if(mDebug)
         {
-            printf("combined poly data points cnt=%lli, cells cnt = %lli\nAfter cleanup, points cnt=%lli, cells cnt = %lli\n",
-                   combinedPolyData->GetNumberOfPoints(), combinedPolyData->GetNumberOfCells(), mTriangulatedPolygon->GetNumberOfPoints(),
+            printf("After cleanup, points cnt=%lli, cells cnt = %lli\n", mTriangulatedPolygon->GetNumberOfPoints(),
                    mTriangulatedPolygon->GetNumberOfCells());
         }
     }
 
-    vtkSmartPointer<vtkPolyData> UniformPolygonTriangulation::GetTriangulatedPolygon() const
+    vtkSmartPointer<vtkPolyData> UniformPolygonTriangulation::GetOutPut() const
     {
         return mTriangulatedPolygon;
     }

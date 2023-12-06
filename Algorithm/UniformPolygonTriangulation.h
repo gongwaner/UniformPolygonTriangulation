@@ -39,7 +39,7 @@ namespace Algorithm
         void SetSquareSize(double size);
         void Triangulate();
 
-        vtkSmartPointer<vtkPolyData> GetTriangulatedPolygon() const;
+        vtkSmartPointer<vtkPolyData> GetOutPut() const;
         vtkVector3d GetAxisX() const;
 
         bool mDebug = false;
@@ -49,10 +49,13 @@ namespace Algorithm
         void InitializePlane();
         void InitializePolygon();
         void InitializeHoles();
+        vtkSmartPointer<vtkPolyData> GetTriangulatedPolygon() const;
 
+        bool mHasHoles = false;
         std::vector<vtkVector3d> mPolygonPoints;
         std::vector<std::vector<vtkVector3d>> mInnerHoles;
-        double mLength = 0;
+
+        bool mUpdateCalculation = false;
 
         vtkVector3d mPlaneCenter;
         vtkVector3d mNormal;
@@ -68,6 +71,7 @@ namespace Algorithm
 
         vtkVector3d mUpperLeftCorner;
         double mBoundingBoxWidth, mBoundingBoxHeight;
+        double mLength = 0;
 
         vtkSmartPointer<vtkPolyData> mTriangulatedPolygon = nullptr;
     };

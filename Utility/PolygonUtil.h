@@ -49,7 +49,7 @@ namespace Utility
      * @param axisY local Y axis
      * @param point point to query
      */
-    bool PointInPolygon(int numOfPoints, const double* polygonPoints2d, double polygonBounds[6],
+    bool PointInPolygon(int numOfPoints, const double* polygonPoints2d, const double polygonBounds[6],
                         const vtkVector3d& planeCenter, const vtkVector3d& axisX, const vtkVector3d& axisY,
                         const vtkVector3d& point);
 }

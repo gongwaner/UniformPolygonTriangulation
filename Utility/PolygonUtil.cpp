@@ -115,7 +115,7 @@ namespace Utility
         return triangle;
     }
 
-    bool PointInPolygon(const int numOfPoints, const double* polygonPoints2d, double polygonBounds[6],
+    bool PointInPolygon(const int numOfPoints, const double* polygonPoints2d, const double polygonBounds[6],
                         const vtkVector3d& planeCenter, const vtkVector3d& axisX, const vtkVector3d& axisY,
                         const vtkVector3d& point)
     {
@@ -126,7 +126,9 @@ namespace Utility
 
         double pointToQuery[3]{xProj, yProj, 0};
         double normal2d[3]{0, 0, 1};
-        return vtkPolygon::PointInPolygon(pointToQuery, numOfPoints, const_cast<double*>(polygonPoints2d), polygonBounds, normal2d);
+        //WARNING: explicitly drop const correctness here to fit vtk function call parameter list
+        return vtkPolygon::PointInPolygon(pointToQuery, numOfPoints, const_cast<double*>(polygonPoints2d),
+                                          const_cast<double*>(polygonBounds), normal2d);
     }
 }
 

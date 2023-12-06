@@ -75,7 +75,7 @@ void TestUniformTriangulation(const std::vector<vtkVector3d>& polygonPoints, con
         {
             auto axisX = triangulation.GetAxisX();
             auto offset = axisX * ((polygonPolyData->GetBounds()[1] - polygonPolyData->GetBounds()[0]) + 10);
-            auto triangulatedPolygon = triangulation.GetTriangulatedPolygon();
+            auto triangulatedPolygon = triangulation.GetOutPut();
             auto polyDataActor = Utility::GetPolyDataActor(triangulatedPolygon, colors->GetColor3d("DarkOliveGreen").GetData());
             polyDataActor->SetPosition(offset.GetData());
             polyDataActor->GetProperty()->SetRepresentationToWireframe();
