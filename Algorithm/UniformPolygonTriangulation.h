@@ -30,9 +30,6 @@ namespace Algorithm
     class UniformPolygonTriangulation
     {
     public:
-        UniformPolygonTriangulation() = default;
-        ~UniformPolygonTriangulation() = default;
-
         void SetPolygonPoints(const std::vector<vtkVector3d>& polygonPoints);
         void SetHoles(const std::vector<std::vector<vtkVector3d>>& holes);
         void SetNormal(const vtkVector3d& planeNormal);
@@ -57,10 +54,10 @@ namespace Algorithm
 
         bool mUpdateCalculation = false;
 
-        vtkVector3d mPlaneCenter;
-        vtkVector3d mNormal;
-        vtkVector3d mAxisX;
-        vtkVector3d mAxisY;
+        vtkVector3d mPlaneCenter = vtkVector3d(0, 0, 0);
+        vtkVector3d mAxisX = vtkVector3d(0, 1, 0);
+        vtkVector3d mAxisY = vtkVector3d(1, 0, 0);
+        vtkVector3d mNormal = vtkVector3d(0, 0, 1);;
 
         //inside/outside query
         std::vector<double> mPolygonPointsData2d;
@@ -69,9 +66,10 @@ namespace Algorithm
         std::vector<std::vector<double>> mHolePointsData2dVector;
         std::vector<std::vector<double>> mHolesBounds;
 
-        vtkVector3d mUpperLeftCorner;
-        double mBoundingBoxWidth, mBoundingBoxHeight;
-        double mLength = 0;
+        vtkVector3d mUpperLeftCorner = vtkVector3d(0, 0, 0);
+        double mBoundingBoxWidth = 0.0;
+        double mBoundingBoxHeight = 0.0;
+        double mLength = 0.0;
 
         vtkSmartPointer<vtkPolyData> mTriangulatedPolygon = nullptr;
     };

@@ -15,9 +15,6 @@ namespace Algorithm
     class SquarePolygonIntersection
     {
     public:
-        SquarePolygonIntersection() = default;
-        ~SquarePolygonIntersection() = default;
-
         void SetPolygonPoints(const std::vector<vtkVector3d>& polygonPoints);
         void SetHoles(const std::vector<std::vector<vtkVector3d>>& holes);
         void SetSquarePoints(const std::vector<vtkVector3d>& squarePoints);
@@ -55,13 +52,13 @@ namespace Algorithm
         std::vector<vtkVector3d> mSquarePoints;
 
         //plane
-        vtkVector3d mPlaneCenter;
-        vtkVector3d mAxisX;
-        vtkVector3d mAxisY;
+        vtkVector3d mPlaneCenter = vtkVector3d(0, 0, 0);
+        vtkVector3d mAxisX = vtkVector3d(1, 0, 0);
+        vtkVector3d mAxisY = vtkVector3d(0, 1, 0);
 
         //square bounds calculation
         std::vector<double> mSquarePointsData2d;
-        double mSquareBounds[4];
+        double mSquareBounds[4]{0.0, 0.0, 0.0, 0.0};
 
         //middle results for intersection calculation
         std::vector<vtkVector3d> mPolygonVertices;//polygon vertices with intersection points

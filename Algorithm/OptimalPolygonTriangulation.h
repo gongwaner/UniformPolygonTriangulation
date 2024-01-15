@@ -9,20 +9,8 @@ namespace Algorithm
 {
     struct Weights
     {
-        double weight;
-        int k;
-
-        Weights()
-        {
-            weight = 0.0;
-            k = 0;
-        }
-
-        Weights(double val, int k)
-        {
-            this->weight = val;
-            this->k = k;
-        }
+        double weight = 0.0;
+        int k = 0;
     };
 
     /**
@@ -32,9 +20,6 @@ namespace Algorithm
     class OptimalPolygonTriangulation
     {
     public:
-        OptimalPolygonTriangulation() = default;
-        ~OptimalPolygonTriangulation() = default;
-
         void SetPolygonPoints(const std::vector<vtkVector3d>& polygonPoints);
         void SetNormal(const vtkVector3d& normal);
         void SetWeightFunction(const std::function<double(const vtkVector3d&, const vtkVector3d&, const vtkVector3d&)>& weightFunc);
@@ -55,9 +40,9 @@ namespace Algorithm
         std::vector<std::pair<int, int>> GetDiagonals() const;
 
         std::vector<vtkVector3d> mPolygonPoints;
-        vtkVector3d mNormal;
+        vtkVector3d mNormal = vtkVector3d(0, 0, 1);
         std::function<double(const vtkVector3d&, const vtkVector3d&, const vtkVector3d&)> mWeightFunc;
-        bool mIsConvex;
+        bool mIsConvex = false;
         vtkSmartPointer<vtkCellArray> mNewTriangles = nullptr;
         vtkSmartPointer<vtkPolyData> mTriangulatedPolygon = nullptr;
     };

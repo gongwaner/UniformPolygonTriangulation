@@ -293,9 +293,9 @@ namespace Algorithm
         //iterate through each pixel
         std::vector<vtkVector3d> squarePoints(squarePntsCnt);
         std::vector<vtkSmartPointer<vtkPolyData>> subTriangulationVector;
-        for(double offsetX = 0; offsetX < mBoundingBoxWidth; offsetX += mLength)
+        for(double offsetX = 0.0; offsetX < mBoundingBoxWidth; offsetX += mLength)
         {
-            for(double offsetY = 0; offsetY < mBoundingBoxHeight; offsetY += mLength)
+            for(double offsetY = 0.0; offsetY < mBoundingBoxHeight; offsetY += mLength)
             {
                 for(int i = 0; i < squarePoints.size(); ++i)
                 {
