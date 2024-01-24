@@ -8,7 +8,7 @@
 
 namespace Utility
 {
-    enum LineIntersectionType
+    enum class LineIntersectionType
     {
         NoIntersection,
         CommonEndPoint,//two lines intersects in common end point

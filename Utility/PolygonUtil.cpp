@@ -93,7 +93,8 @@ namespace Utility
         vtkMath::Normalize(normal);
     }
 
-    vtkSmartPointer<vtkTriangle> GetTriangle(const std::vector<vtkVector3d>& points, int vid0, int vid1, int vid2, const vtkVector3d& planeNormal)
+    vtkSmartPointer<vtkTriangle> GetTriangle(const std::vector<vtkVector3d>& points, const int vid0, const int vid1, const int vid2,
+                                             const vtkVector3d& planeNormal)
     {
         double triNormal[3];
         vtkTriangle::ComputeNormal(points[vid0].GetData(), points[vid1].GetData(), points[vid2].GetData(), triNormal);

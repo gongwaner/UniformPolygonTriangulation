@@ -8,7 +8,7 @@
 
 namespace TestUtil
 {
-    void AddPolyData(const vtkSmartPointer<vtkPolyData>& polyData, const double* color, std::vector<vtkSmartPointer<vtkActor>>& actors, bool wireFrame)
+    void AddPolyData(const vtkSmartPointer<vtkPolyData>& polyData, const double* color, std::vector<vtkSmartPointer<vtkActor>>& actors, const bool wireFrame)
     {
         auto polydataActor = Utility::GetPolyDataActor(polyData, color);
         if(wireFrame)

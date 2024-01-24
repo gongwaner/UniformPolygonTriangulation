@@ -80,7 +80,7 @@ namespace Algorithm
                     table[i][j].weight = DBL_MAX;
                     for(int k = i + 1; k < j; k++)
                     {
-                        double weight = table[i][k].weight + table[k][j].weight + mWeightFunc(mPolygonPoints[i], mPolygonPoints[j], mPolygonPoints[k]);
+                        const double weight = table[i][k].weight + table[k][j].weight + mWeightFunc(mPolygonPoints[i], mPolygonPoints[j], mPolygonPoints[k]);
 
                         if(table[i][j].weight > weight)
                         {
@@ -108,12 +108,12 @@ namespace Algorithm
         if(i > j)
             std::swap(i, j);
 
-        int n = mPolygonPoints.size();
+        const int n = mPolygonPoints.size();
 
-        int begin1 = i + 1;
-        int end1 = j - 1;
-        int begin2 = (j + 1) % n;
-        int end2 = (i > 0) ? i - 1 : n - 1;
+        const int begin1 = i + 1;
+        const int end1 = j - 1;
+        const int begin2 = (j + 1) % n;
+        const int end2 = (i > 0) ? i - 1 : n - 1;
 
         //check intersection between (i,j) and all polygon edges
         //TODO: corner case: if (i,j) and (k,k+1) are coplanar and intersect one of (i,j) is in middle of line, this is a valid diagonal
@@ -133,19 +133,23 @@ namespace Algorithm
         vtkVector3d v2 = i > 0 ? (mPolygonPoints[i - 1] - mPolygonPoints[i]) : (mPolygonPoints[n - 1] - mPolygonPoints[i]);
         vtkVector3d v3 = mPolygonPoints[j] - mPolygonPoints[i];
 
-        double crossProducts[3];
+        std::vector<double> crossProducts(3);
         crossProducts[0] = v1.Cross(v2).Dot(mNormal);// V1xV2
         crossProducts[1] = v1.Cross(v3).Dot(mNormal); // V1xV3
         crossProducts[2] = v3.Cross(v2).Dot(mNormal); // V3xV2
 
-        //angle between v1 and v2 (in counter-clockwise direction) is <= 180
         if((crossProducts[0] > 0 || abs(crossProducts[0]) < epsilon) && (crossProducts[1] > 0 || abs(crossProducts[1]) < epsilon) &&
            (crossProducts[2] > 0 || abs(crossProducts[2]) < epsilon))
+        {
+            //angle between v1 and v2 (in counter-clockwise direction) is <= 180
             return true;
-            //angle between v1 and v2 (in counter-clockwise direction) is > 180
+        }
         else if((crossProducts[0] < 0) &&
                 ((crossProducts[1] > 0 || abs(crossProducts[1]) < epsilon) || (crossProducts[2] > 0 || abs(crossProducts[2]) < epsilon)))
+        {
+            //angle between v1 and v2 (in counter-clockwise direction) is > 180
             return true;
+        }
 
         return false;
     }
@@ -196,11 +200,8 @@ namespace Algorithm
      */
     bool OptimalPolygonTriangulation::IsTriangle(const std::vector<std::vector<bool>>& diagonalMatrix, int i, int j, int k) const
     {
-        bool edge;
-        int absValue;
-
-        absValue = abs(i - j);
-        edge = ((absValue == 1) || (absValue == (mPolygonPoints.size() - 1)));
+        int absValue = abs(i - j);
+        bool edge = ((absValue == 1) || (absValue == (mPolygonPoints.size() - 1)));
         if(!(edge || diagonalMatrix[i][j]))
             return false;
 
@@ -219,7 +220,7 @@ namespace Algorithm
 
     void OptimalPolygonTriangulation::ConcaveTriangulation()
     {
-        int n = mPolygonPoints.size();
+        const int n = mPolygonPoints.size();
 
         //get all valid diagonals
         std::vector<std::pair<int, int>> validDiagonals = GetDiagonals();
@@ -276,7 +277,7 @@ namespace Algorithm
                             continue;
                         }
 
-                        double weight = table[i][k].weight + table[k][j].weight + mWeightFunc(mPolygonPoints[i], mPolygonPoints[j], mPolygonPoints[k]);
+                        const double weight = table[i][k].weight + table[k][j].weight + mWeightFunc(mPolygonPoints[i], mPolygonPoints[j], mPolygonPoints[k]);
 
                         if(table[i][j].weight > weight)
                         {

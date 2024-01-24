@@ -44,7 +44,7 @@ namespace Utility
 
     vtkSmartPointer<vtkPolyData> GetLinePolyData(const vtkVector3d& start, const vtkVector3d& dir, const double length)
     {
-        auto end = start + dir * length;
+        const auto end = start + dir * length;
         return GetLinePolyData(start, end);
     }
 }

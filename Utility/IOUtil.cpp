@@ -18,7 +18,7 @@ namespace Utility
 {
     bool PathExist(const char* fileDir)
     {
-        auto path = std::filesystem::path(fileDir);
+        const auto path = std::filesystem::path(fileDir);
         if(!std::filesystem::exists(path))
         {
             std::cerr << "ERROR: Directory " << path.string() << " does not exist!" << std::endl;
@@ -30,8 +30,8 @@ namespace Utility
 
     bool IsValidDirectory(const char* fileDir)
     {
-        auto path = std::filesystem::path(fileDir);
-        auto parentDir = path.parent_path();
+        const auto path = std::filesystem::path(fileDir);
+        const auto parentDir = path.parent_path();
         if(!std::filesystem::is_directory(parentDir))
         {
             std::cerr << "ERROR: Directory " << parentDir.string() << " does not exist!" << std::endl;
@@ -46,12 +46,11 @@ namespace Utility
         if(!PathExist(fileDir))
             return nullptr;
 
-        auto path = std::filesystem::path(fileDir);
+        const auto path = std::filesystem::path(fileDir);
+        const auto extension = std::filesystem::path(fileDir).extension();
         std::cout << "Reading " << path << std::endl;
 
         vtkSmartPointer<vtkPolyData> polyData;
-        auto extension = std::filesystem::path(fileDir).extension();
-
         if(extension == ".ply")
         {
             auto reader = vtkSmartPointer<vtkPLYReader>::New();
@@ -95,8 +94,8 @@ namespace Utility
         if(!IsValidDirectory(fileDir))
             return;
 
-        auto path = std::filesystem::path(fileDir);
-        auto extension = path.extension();
+        const auto path = std::filesystem::path(fileDir);
+        const auto extension = path.extension();
 
         if(extension == ".ply")
         {
@@ -132,8 +131,8 @@ namespace Utility
         if(!IsValidDirectory(fileDir))
             return;
 
-        auto path = std::filesystem::path(fileDir);
-        auto extension = path.extension();
+        const auto path = std::filesystem::path(fileDir);
+        const auto extension = path.extension();
         if(extension != ".ply")
         {
             std::cerr << "ERROR: wrong extension. Should be .ply" << std::endl;

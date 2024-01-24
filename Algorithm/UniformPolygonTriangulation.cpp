@@ -26,9 +26,9 @@ namespace Algorithm
         for(const auto& point: squarePoints)
         {
             //projection along local axes
-            auto cp = point - planeCenter;
-            auto xProj = cp.Dot(axisX);
-            auto yProj = cp.Dot(axisY);
+            const auto cp = point - planeCenter;
+            const auto xProj = cp.Dot(axisX);
+            const auto yProj = cp.Dot(axisY);
 
             if(xProj > maxXProj)
                 maxXProj = xProj;
@@ -62,9 +62,9 @@ namespace Algorithm
                 continue;
 
             //local projection
-            auto cp = (polyPnt - planeCenter);
-            double xProj = cp.Dot(axisX);
-            double yProj = cp.Dot(axisY);
+            const auto cp = (polyPnt - planeCenter);
+            const double xProj = cp.Dot(axisX);
+            const double yProj = cp.Dot(axisY);
 
             //point on square edge
             if(abs(xProj - squareBounds[0]) < epsilon || abs(xProj - squareBounds[1]) < epsilon ||
@@ -203,9 +203,9 @@ namespace Algorithm
         for(const auto& point: mPolygonPoints)
         {
             //projection along local axes
-            auto cp = point - mPlaneCenter;
-            auto xProj = cp.Dot(mAxisX);
-            auto yProj = cp.Dot(mAxisY);
+            const auto cp = point - mPlaneCenter;
+            const auto xProj = cp.Dot(mAxisX);
+            const auto yProj = cp.Dot(mAxisY);
 
             polygonBoundingBox.AddPoint(xProj, yProj, 0);
             mPolygonPointsData2d.push_back(xProj);
@@ -242,9 +242,9 @@ namespace Algorithm
             for(const auto& point: hole)
             {
                 //projection along local axes
-                auto cp = point - mPlaneCenter;
-                auto xProj = cp.Dot(mAxisX);
-                auto yProj = cp.Dot(mAxisY);
+                const auto cp = point - mPlaneCenter;
+                const auto xProj = cp.Dot(mAxisX);
+                const auto yProj = cp.Dot(mAxisY);
 
                 holeBoundingBox.AddPoint(xProj, yProj, 0);
                 holePointsData2d.push_back(xProj);
