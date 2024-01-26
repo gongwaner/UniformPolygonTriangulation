@@ -323,7 +323,7 @@ namespace Algorithm
                         else
                         {
                             //check if square is completely inside any of the hole
-                            //ie.all hole points outside square and all square points inside hole
+                            //i.e.all hole points outside square and all square points inside hole
                             bool insideOneOfHoles = false;
                             for(int holeID = 0; holeID < mInnerHoles.size(); ++holeID)
                             {

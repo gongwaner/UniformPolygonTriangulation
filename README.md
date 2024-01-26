@@ -22,7 +22,7 @@ This algorithm adds new vertices during triangulation process. Works for both in
 
 <br/>**Adaptivity**
 <br/>This is an adaptive triangulation algorithm that adds new vertices during triangulation. The algorithm doesn't have a parameter for setting the number of vertices added, but this can be somewhat controlled by setting the size of the pixel/square. 
-<br/>Also the optimal triangulation can be done by using customized weight functions. Currently in the code I used aspect ratio as weight function(ie.the triangulation aims to triangulate with minimum aspect ratio of triangle).
+<br/>Also the optimal triangulation can be done by using customized weight functions. Currently, I use aspect ratio as weight function(i.e.the triangulation aims to triangulate with minimum aspect ratio of triangle).
 
 <br/>**Advantage**
 <br/>VTK provides various filters that enable fast and robust triangulation of polygon, such as  [vtkTriangleFilter](https://vtk.org/doc/nightly/html/classvtkTriangleFilter.html). However, due to the shape of polygon, it might produce silver triangles. By introducing new vertices, this algorithm (almost) eliminates the generation of silver triangles with relatively good performance.

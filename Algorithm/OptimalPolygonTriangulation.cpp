@@ -138,18 +138,15 @@ namespace Algorithm
         crossProducts[1] = v1.Cross(v3).Dot(mNormal); // V1xV3
         crossProducts[2] = v3.Cross(v2).Dot(mNormal); // V3xV2
 
-        if((crossProducts[0] > 0 || abs(crossProducts[0]) < epsilon) && (crossProducts[1] > 0 || abs(crossProducts[1]) < epsilon) &&
-           (crossProducts[2] > 0 || abs(crossProducts[2]) < epsilon))
-        {
-            //angle between v1 and v2 (in counter-clockwise direction) is <= 180
+        const bool angleLessEqual180 = (crossProducts[0] > 0 || abs(crossProducts[0]) < epsilon) &&
+                                       (crossProducts[1] > 0 || abs(crossProducts[1]) < epsilon) &&
+                                       (crossProducts[2] > 0 || abs(crossProducts[2]) < epsilon);
+        const bool angleGreaterThan180 = (crossProducts[0] < 0) &&
+                                         ((crossProducts[1] > 0 || abs(crossProducts[1]) < epsilon) ||
+                                          (crossProducts[2] > 0 || abs(crossProducts[2]) < epsilon));
+
+        if(angleLessEqual180 || angleGreaterThan180)
             return true;
-        }
-        else if((crossProducts[0] < 0) &&
-                ((crossProducts[1] > 0 || abs(crossProducts[1]) < epsilon) || (crossProducts[2] > 0 || abs(crossProducts[2]) < epsilon)))
-        {
-            //angle between v1 and v2 (in counter-clockwise direction) is > 180
-            return true;
-        }
 
         return false;
     }

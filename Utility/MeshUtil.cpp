@@ -4,8 +4,6 @@
 #include <vtkPointData.h>
 #include <vtkAppendPolyData.h>
 
-#include <stack>
-
 
 namespace Utility
 {
