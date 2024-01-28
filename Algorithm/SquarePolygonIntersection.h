@@ -52,9 +52,9 @@ namespace Algorithm
         std::vector<vtkVector3d> mSquarePoints;
 
         //plane
-        vtkVector3d mPlaneCenter = vtkVector3d(0, 0, 0);
-        vtkVector3d mAxisX = vtkVector3d(1, 0, 0);
-        vtkVector3d mAxisY = vtkVector3d(0, 1, 0);
+        vtkVector3d mPlaneCenter{0, 0, 0};
+        vtkVector3d mAxisX{1, 0, 0};
+        vtkVector3d mAxisY{0, 1, 0};
 
         //square bounds calculation
         std::vector<double> mSquarePointsData2d;

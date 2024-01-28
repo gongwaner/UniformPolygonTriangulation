@@ -40,7 +40,7 @@ namespace Algorithm
         std::vector<std::pair<int, int>> GetDiagonals() const;
 
         std::vector<vtkVector3d> mPolygonPoints;
-        vtkVector3d mNormal = vtkVector3d(0, 0, 1);
+        vtkVector3d mNormal{0, 0, 1};
         std::function<double(const vtkVector3d&, const vtkVector3d&, const vtkVector3d&)> mWeightFunc;
         bool mIsConvex = false;
         vtkSmartPointer<vtkCellArray> mNewTriangles = nullptr;
