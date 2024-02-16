@@ -1,6 +1,5 @@
 #pragma once
 
-#include <vtkSmartPointer.h>
 #include <vtkVector.h>
 
 #include <vector>
