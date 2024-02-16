@@ -34,7 +34,7 @@ namespace Algorithm
         void ConvexTriangulation();
         void ConcaveTriangulation();
 
-        bool IsValidDiagonal(int i, int j, const double epsilon = 1e-6) const;
+        bool IsValidDiagonal(int i, int j, double epsilon = 1e-6) const;
         bool IsTriangle(const std::vector<std::vector<bool>>& diagonalMatrix, int i, int j, int k) const;
 
         std::vector<std::pair<int, int>> GetDiagonals() const;

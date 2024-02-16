@@ -37,7 +37,7 @@ namespace Algorithm
         mNewTriangles->InsertNextCell(triangle);
     }
 
-    void OptimalPolygonTriangulation::AddNewTriangles(const std::vector<std::vector<Weights>>& table, int i, int j)
+    void OptimalPolygonTriangulation::AddNewTriangles(const std::vector<std::vector<Weights>>& table, const int i, const int j)
     {
         if(j <= i + 1)
             return;
@@ -57,21 +57,20 @@ namespace Algorithm
 
     void OptimalPolygonTriangulation::ConvexTriangulation()
     {
-        int n = mPolygonPoints.size();
+        const auto size = mPolygonPoints.size();
 
         // table to store results of subproblems.  table[i][j] stores cost of triangulation of points from i to j.
         // The entry table[0][n-1] stores the final result.
-        std::vector<std::vector<Weights>> table;
-        for(int i = 0; i < n; ++i)
+        std::vector<std::vector<Weights>> table(size);
+        for(int i = 0; i < size; ++i)
         {
-            std::vector<Weights> entry(n);
-            table.push_back(entry);
+            std::vector<Weights> entry(size);
+            table[i] = entry;
         }
 
-        //dynamic programming
-        for(int gap = 0; gap < n; gap++)
+        for(int gap = 0; gap < size; gap++)
         {
-            for(int i = 0, j = gap; j < n; i++, j++)
+            for(int i = 0, j = gap; j < size; i++, j++)
             {
                 if(j < i + 2)
                     table[i][j].weight = 0;
@@ -92,7 +91,7 @@ namespace Algorithm
             }
         }
 
-        AddNewTriangles(table, 0, n - 1);
+        AddNewTriangles(table, 0, size - 1);
     }
 
     /**
@@ -129,9 +128,9 @@ namespace Algorithm
         }
 
         //no intersections, check if line segment ij is completely inside or completely outside polygon
-        vtkVector3d v1 = mPolygonPoints[i + 1] - mPolygonPoints[i];
-        vtkVector3d v2 = i > 0 ? (mPolygonPoints[i - 1] - mPolygonPoints[i]) : (mPolygonPoints[n - 1] - mPolygonPoints[i]);
-        vtkVector3d v3 = mPolygonPoints[j] - mPolygonPoints[i];
+        const vtkVector3d v1 = mPolygonPoints[i + 1] - mPolygonPoints[i];
+        const vtkVector3d v2 = i > 0 ? (mPolygonPoints[i - 1] - mPolygonPoints[i]) : (mPolygonPoints[n - 1] - mPolygonPoints[i]);
+        const vtkVector3d v3 = mPolygonPoints[j] - mPolygonPoints[i];
 
         std::vector<double> crossProducts(3);
         crossProducts[0] = v1.Cross(v2).Dot(mNormal);// V1xV2
@@ -197,7 +196,7 @@ namespace Algorithm
      */
     bool OptimalPolygonTriangulation::IsTriangle(const std::vector<std::vector<bool>>& diagonalMatrix, int i, int j, int k) const
     {
-        int absValue = abs(i - j);
+        auto absValue = abs(i - j);
         bool edge = ((absValue == 1) || (absValue == (mPolygonPoints.size() - 1)));
         if(!(edge || diagonalMatrix[i][j]))
             return false;
@@ -217,16 +216,15 @@ namespace Algorithm
 
     void OptimalPolygonTriangulation::ConcaveTriangulation()
     {
-        const int n = mPolygonPoints.size();
+        const auto size = mPolygonPoints.size();
 
         //get all valid diagonals
         std::vector<std::pair<int, int>> validDiagonals = GetDiagonals();
-        std::vector<std::vector<bool>> diagonalMatrix;
-        for(int i = 0; i < n; ++i)
+        std::vector<std::vector<bool>> diagonalMatrix(size);
+        for(int i = 0; i < size; ++i)
         {
-            std::vector<bool> entry(n);
-            std::fill(entry.begin(), entry.end(), false);
-            diagonalMatrix.push_back(entry);
+            std::vector<bool> entry(size, false);
+            diagonalMatrix[i] = entry;
         }
 
         //initialize valid diagonals
@@ -238,17 +236,17 @@ namespace Algorithm
 
         // table to store results of subproblems.  table[i][j] stores cost of triangulation of points from i to j.
         // The entry table[0][n-1] stores the final result.
-        std::vector<std::vector<Weights>> table;
-        for(int i = 0; i < n; ++i)
+        std::vector<std::vector<Weights>> table(size);
+        for(int i = 0; i < size; ++i)
         {
-            std::vector<Weights> entry(n);
-            table.push_back(entry);
+            std::vector<Weights> entry(size);
+            table[i] = entry;
         }
 
         //dynamic programming
-        for(int gap = 0; gap < n; gap++)
+        for(int gap = 0; gap < size; gap++)
         {
-            for(int i = 0, j = gap; j < n; i++, j++)
+            for(int i = 0, j = gap; j < size; i++, j++)
             {
                 if(j < i + 2)
                     table[i][j].weight = 0;
@@ -262,7 +260,7 @@ namespace Algorithm
                 else
                 {
                     table[i][j].weight = DBL_MAX;
-                    if((j < n - 1) && !diagonalMatrix[i][j]) //ij must be a diagonal, except 0 -> n - 1
+                    if((j < size - 1) && !diagonalMatrix[i][j]) //ij must be a diagonal, except 0 -> n - 1
                     {
                         continue;
                     }
@@ -286,7 +284,7 @@ namespace Algorithm
             }
         }
 
-        AddNewTriangles(table, 0, n - 1);
+        AddNewTriangles(table, 0, size - 1);
     }
 
     void OptimalPolygonTriangulation::GeneratePolyData()
