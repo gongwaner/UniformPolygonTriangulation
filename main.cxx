@@ -1,3 +1,9 @@
+#include "Utility/ActorUtil.h"
+#include "Utility/PolygonUtil.h"
+#include "Utility/TestUtil.h"
+#include "Algorithm/UniformPolygonTriangulation.h"
+
+#include <vtkPolyData.h>
 #include <vtkActor.h>
 #include <vtkCamera.h>
 #include <vtkColor.h>
@@ -13,11 +19,6 @@
 #include <vtkRenderer.h>
 
 #include <chrono>
-
-#include "Utility/ActorUtil.h"
-#include "Utility/PolygonUtil.h"
-#include "Utility/TestUtil.h"
-#include "Algorithm/UniformPolygonTriangulation.h"
 
 
 void TestUniformTriangulation(const std::vector<vtkVector3d>& polygonPoints, const std::vector<std::vector<vtkVector3d>>& holes, bool debug = false)

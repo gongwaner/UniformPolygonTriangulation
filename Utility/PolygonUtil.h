@@ -1,10 +1,12 @@
 #pragma once
 
 #include <vtkSmartPointer.h>
-#include <vtkPolyData.h>
 #include <vtkVector.h>
 #include <vector>
 
+
+class vtkPolyData;
+class vtkTriangle;
 
 namespace Utility
 {

@@ -1,10 +1,11 @@
 #pragma once
 
 #include <vtkSmartPointer.h>
-#include <vtkPolyData.h>
-#include <vtkSphereSource.h>
 #include <vtkVector.h>
 
+
+class vtkPoints;
+class vtkPolyData;
 
 namespace Utility
 {

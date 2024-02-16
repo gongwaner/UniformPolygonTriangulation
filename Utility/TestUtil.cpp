@@ -1,9 +1,11 @@
 #include "TestUtil.h"
 
-#include <vtkProperty.h>
-
 #include "ActorUtil.h"
 #include "GeometricObjectUtil.h"
+
+#include <vtkProperty.h>
+#include <vtkPolyData.h>
+#include <vtkActor.h>
 
 
 namespace TestUtil

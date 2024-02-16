@@ -1,5 +1,6 @@
 #include "MeshUtil.h"
 
+#include <vtkPolyData.h>
 #include <vtkVectorOperators.h>
 #include <vtkPointData.h>
 #include <vtkAppendPolyData.h>

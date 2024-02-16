@@ -1,9 +1,12 @@
 #include "ActorUtil.h"
 
+#include "GeometricObjectUtil.h"
+
+#include <vtkActor.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkPolyData.h>
 #include <vtkPoints.h>
 #include <vtkProperty.h>
-
-#include "GeometricObjectUtil.h"
 
 
 namespace Utility

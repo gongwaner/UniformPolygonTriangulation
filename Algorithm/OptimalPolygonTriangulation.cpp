@@ -1,10 +1,11 @@
 #include "OptimalPolygonTriangulation.h"
 
+#include "../Utility/PolygonUtil.h"
+
+#include <vtkPoints.h>
 #include <vtkTriangle.h>
 #include <vtkVectorOperators.h>
 #include <vtkPolygon.h>
-
-#include "../Utility/PolygonUtil.h"
 
 
 namespace Algorithm

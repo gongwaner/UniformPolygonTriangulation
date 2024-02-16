@@ -1,6 +1,6 @@
 #include "GeometricObjectUtil.h"
 
-#include <vtkSphereSource.h>
+#include <vtkPolyData.h>
 #include <vtkPlaneSource.h>
 #include <vtkVertexGlyphFilter.h>
 #include <vtkVectorOperators.h>

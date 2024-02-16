@@ -1,12 +1,12 @@
 #pragma once
 
-#include <vtkActor.h>
 #include <vtkSmartPointer.h>
-#include <vtkPolyData.h>
 #include <vtkVector.h>
-#include <vtkPolyDataMapper.h>
-#include <vtkLookupTable.h>
 
+
+class vtkActor;
+class vtkPolyDataMapper;
+class vtkPolyData;
 
 namespace Utility
 {

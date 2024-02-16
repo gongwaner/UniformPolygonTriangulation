@@ -1,5 +1,6 @@
 #include "PolygonUtil.h"
 
+#include <vtkPolyData.h>
 #include <vtkPoints.h>
 #include <vtkPolygon.h>
 #include <vtkVectorOperators.h>

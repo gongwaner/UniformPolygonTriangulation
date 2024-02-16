@@ -1,11 +1,12 @@
 #pragma once
 
 #include <vtkSmartPointer.h>
-#include <vtkPolyData.h>
-#include <vtkActor.h>
 #include <vtkVector.h>
 #include <vector>
 
+
+class vtkPolyData;
+class vtkActor;
 
 namespace TestUtil
 {

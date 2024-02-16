@@ -1,5 +1,6 @@
 #include "IOUtil.h"
 
+#include <vtkPolyData.h>
 #include <vtkPLYReader.h>
 #include <vtkPLYWriter.h>
 #include <vtkOBJReader.h>
