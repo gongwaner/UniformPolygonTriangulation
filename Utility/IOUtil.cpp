@@ -44,7 +44,7 @@ namespace Utility
     vtkSmartPointer<vtkPolyData> ReadPolyData(const char* fileDir)
     {
         if(!PathExist(fileDir))
-            return nullptr;
+            throw std::runtime_error("ReadPolyData(). Path does not exist!");
 
         const auto path = std::filesystem::path(fileDir);
         const auto extension = std::filesystem::path(fileDir).extension();
@@ -81,7 +81,7 @@ namespace Utility
         }
         else
         {
-            std::cerr << "ERROR: unsupported file extension" << std::endl;
+            throw std::runtime_error("ReadPolyData(). ERROR: unsupported file extension!");
         }
 
         printf("Poly data vertices cnt: %lld, cells cnt: %lld\n", polyData->GetNumberOfPoints(), polyData->GetNumberOfCells());
@@ -121,6 +121,7 @@ namespace Utility
         else
         {
             std::cerr << "ERROR: unsupported file extension" << std::endl;
+            return;
         }
 
         std::cout << "Poly data is written to " << path << std::endl;

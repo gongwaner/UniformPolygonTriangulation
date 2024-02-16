@@ -194,7 +194,7 @@ namespace Algorithm
      * a triangle consists of 1 edge and 2 diagonals or 2 edges and 1 diagonal or 3 diagonals
      * if a line segment is neither edge nor diagonal, it can't be a part of a triangle
      */
-    bool OptimalPolygonTriangulation::IsTriangle(const std::vector<std::vector<bool>>& diagonalMatrix, int i, int j, int k) const
+    bool OptimalPolygonTriangulation::IsTriangle(const std::vector<std::vector<bool>>& diagonalMatrix, const int i, const int j, const int k) const
     {
         auto absValue = abs(i - j);
         bool edge = ((absValue == 1) || (absValue == (mPolygonPoints.size() - 1)));
