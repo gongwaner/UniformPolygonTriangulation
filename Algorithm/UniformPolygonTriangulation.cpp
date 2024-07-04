@@ -1,18 +1,19 @@
 #include "UniformPolygonTriangulation.h"
 
-#include "SquarePolygonIntersection.h"
-#include "OptimalPolygonTriangulation.h"
-
-#include "../Utility/GeometricObjectUtil.h"
-#include "../Utility/MeshUtil.h"
-#include "../Utility/PolygonUtil.h"
-#include "../Utility/CommonUtil.h"
-
 #include <vtkPolyData.h>
 #include <vtkPolygon.h>
 #include <vtkVectorOperators.h>
 #include <vtkTriangle.h>
 #include <vtkCleanPolyData.h>
+
+#include "../Utility/PolygonUtil.h"
+#include "../Utility/CommonUtil.h"
+#include "../CommonUtility/Mesh/GeometricObjectUtil.h"
+#include "../CommonUtility/Mesh/MeshUtil.h"
+#include "../CommonUtility/Polygon/PolygonUtil.h"
+
+#include "SquarePolygonIntersection.h"
+#include "OptimalPolygonTriangulation.h"
 
 
 namespace Algorithm
@@ -186,7 +187,7 @@ namespace Algorithm
 
         double axisX[3];
         double axisY[3];
-        Utility::GetPlaneAxes(mPlaneCenter.GetData(), mNormal.GetData(), axisX, axisY);
+        GeometricObjectUtil::GetPlaneAxes(mPlaneCenter.GetData(), mNormal.GetData(), axisX, axisY);
 
         mAxisX = vtkVector3d(axisX);
         mAxisY = vtkVector3d(axisY);
@@ -274,10 +275,8 @@ namespace Algorithm
         startSquarePoints[2] = startSquarePoints[1] + mAxisX * mLength;
         startSquarePoints[3] = mUpperLeftCorner + mAxisX * mLength;
 
-        double squareNormal[3];
-        Utility::ComputePolygonNormal(startSquarePoints, squareNormal);
-
-        if(vtkVector3d(squareNormal).Dot(mNormal) < 0)
+        const auto squareNormal = PolygonUtil::GetPolygonNormal(startSquarePoints);
+        if(squareNormal.Dot(mNormal) < 0)
             std::reverse(startSquarePoints.begin(), startSquarePoints.end());
 
         //setup sub-polygon calculation. polygon and holes only need to be passed once
@@ -401,7 +400,7 @@ namespace Algorithm
             }
         }
 
-        auto combinedPolyData = Utility::GetCombinedPolyData(subTriangulationVector);
+        auto combinedPolyData = MeshUtil::GetCombinedPolyData(subTriangulationVector);
         if(mDebug)
         {
             printf("combined poly data points cnt=%lli, cells cnt = %lli\n", combinedPolyData->GetNumberOfPoints(),

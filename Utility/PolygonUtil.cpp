@@ -68,32 +68,6 @@ namespace Utility
         return LineIntersectionType::NoIntersection;
     }
 
-    void ComputePolygonNormal(const std::vector<vtkVector3d>& polygonPoints, double normal[3])
-    {
-        normal[0] = 0;
-        normal[1] = 0;
-        normal[2] = 0;
-
-        vtkVector3d pt0 = polygonPoints[0];
-        vtkVector3d pt1;
-        auto numOfPoints = polygonPoints.size();
-
-        for(unsigned int i = 0; i < numOfPoints; i++)
-        {
-            pt1 = polygonPoints[(i + 1) % numOfPoints];
-
-            normal[0] += (pt0[1] - pt1[1]) * (pt0[2] + pt1[2]);
-            normal[1] += (pt0[2] - pt1[2]) * (pt0[0] + pt1[0]);
-            normal[2] += (pt0[0] - pt1[0]) * (pt0[1] + pt1[1]);
-
-            pt0[0] = pt1[0];
-            pt0[1] = pt1[1];
-            pt0[2] = pt1[2];
-        }
-
-        vtkMath::Normalize(normal);
-    }
-
     vtkSmartPointer<vtkTriangle> GetTriangle(const std::vector<vtkVector3d>& points, const int vid0, const int vid1, const int vid2,
                                              const vtkVector3d& planeNormal)
     {

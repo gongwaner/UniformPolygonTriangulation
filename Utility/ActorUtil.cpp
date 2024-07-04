@@ -1,12 +1,12 @@
 #include "ActorUtil.h"
 
-#include "GeometricObjectUtil.h"
-
 #include <vtkActor.h>
 #include <vtkPolyDataMapper.h>
 #include <vtkPolyData.h>
 #include <vtkPoints.h>
 #include <vtkProperty.h>
+
+#include "../CommonUtility/Mesh/GeometricObjectUtil.h"
 
 
 namespace Utility
@@ -36,7 +36,7 @@ namespace Utility
     {
         auto points = vtkSmartPointer<vtkPoints>::New();
         points->InsertNextPoint(point[0], point[1], point[2]);
-        auto pointPolyData = GetPointsPolyData(points);
+        auto pointPolyData = GeometricObjectUtil::GetPointsPolyData(points);
 
         auto pointActor = GetPolyDataActor(pointPolyData, pointColor);
         pointActor->GetProperty()->SetPointSize(pointSize);
@@ -49,7 +49,7 @@ namespace Utility
         auto points = vtkSmartPointer<vtkPoints>::New();
         for(const auto& point: pointsVector)
             points->InsertNextPoint(point[0], point[1], point[2]);
-        auto pointPolyData = GetPointsPolyData(points);
+        auto pointPolyData = GeometricObjectUtil::GetPointsPolyData(points);
 
         auto pointActor = GetPolyDataActor(pointPolyData, pointColor);
         pointActor->GetProperty()->SetPointSize(pointSize);

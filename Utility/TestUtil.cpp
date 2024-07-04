@@ -1,11 +1,12 @@
 #include "TestUtil.h"
 
-#include "ActorUtil.h"
-#include "GeometricObjectUtil.h"
-
 #include <vtkProperty.h>
 #include <vtkPolyData.h>
 #include <vtkActor.h>
+
+#include "../CommonUtility/Mesh/GeometricObjectUtil.h"
+
+#include "ActorUtil.h"
 
 
 namespace TestUtil
@@ -32,7 +33,7 @@ namespace TestUtil
 
     void AddVector(const vtkVector3d& start, const vtkVector3d& end, const float lineWidth, const double* color, std::vector<vtkSmartPointer<vtkActor>>& actors)
     {
-        auto vectorActor = Utility::GetPolyDataActor(Utility::GetLinePolyData(start, end), color);
+        auto vectorActor = Utility::GetPolyDataActor(GeometricObjectUtil::GetLinePolyData(start, end), color);
         vectorActor->GetProperty()->SetLineWidth(lineWidth);
         actors.push_back(vectorActor);
     }

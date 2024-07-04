@@ -35,17 +35,18 @@ endif ()
 # Prevent a "command line is too long" failure in Windows.
 set(CMAKE_NINJA_FORCE_RESPONSE_FILE "ON" CACHE BOOL "Force Ninja to use response files.")
 
-add_executable(${PROJECT_NAME} MACOSX_BUNDLE main.cxx
+add_executable(${PROJECT_NAME} MACOSX_BUNDLE main.cpp
         Algorithm/OptimalPolygonTriangulation.cpp
         Algorithm/SquarePolygonIntersection.cpp
         Algorithm/UniformPolygonTriangulation.cpp
         Utility/ActorUtil.cpp
         Utility/CommonUtil.cpp
-        Utility/GeometricObjectUtil.cpp
         Utility/IOUtil.cpp
-        Utility/MeshUtil.cpp
         Utility/PolygonUtil.cpp
-        Utility/TestUtil.cpp)
+        Utility/TestUtil.cpp
+        CommonUtility/Mesh/GeometricObjectUtil.cpp
+        CommonUtility/Mesh/MeshUtil.cpp
+        CommonUtility/Polygon/PolygonUtil.cpp)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ${VTK_LIBRARIES})
 

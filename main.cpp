@@ -1,8 +1,3 @@
-#include "Utility/ActorUtil.h"
-#include "Utility/PolygonUtil.h"
-#include "Utility/TestUtil.h"
-#include "Algorithm/UniformPolygonTriangulation.h"
-
 #include <vtkPolyData.h>
 #include <vtkActor.h>
 #include <vtkCamera.h>
@@ -20,11 +15,16 @@
 
 #include <chrono>
 
+#include "Utility/ActorUtil.h"
+#include "Utility/PolygonUtil.h"
+#include "Utility/TestUtil.h"
+#include "Algorithm/UniformPolygonTriangulation.h"
+#include "CommonUtility/Polygon/PolygonUtil.h"
+
 
 void TestUniformTriangulation(const std::vector<vtkVector3d>& polygonPoints, const std::vector<std::vector<vtkVector3d>>& holes, bool debug = false)
 {
-    double polygonNormal[3];
-    Utility::ComputePolygonNormal(polygonPoints, polygonNormal);
+    const auto polygonNormal = PolygonUtil::GetPolygonNormal(polygonPoints);
 
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -32,7 +32,7 @@ void TestUniformTriangulation(const std::vector<vtkVector3d>& polygonPoints, con
     triangulation.mDebug = debug;
     triangulation.SetPolygonPoints(polygonPoints);
     triangulation.SetHoles(holes);
-    triangulation.SetNormal(vtkVector3d(polygonNormal));
+    triangulation.SetNormal(polygonNormal);
     triangulation.Triangulate();
 
     auto stop = std::chrono::high_resolution_clock::now();

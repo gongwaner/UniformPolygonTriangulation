@@ -29,12 +29,6 @@ namespace Utility
                                                  const vtkVector3d& line2Start, const vtkVector3d& line2End,
                                                  vtkVector3d& intersectionPoint, double epsilon = 1e-6);
 
-    /**
-     * compute normal for any kind of polygon. as vtkPolygon::ComputeNormal only works for convex polygon
-     * ref: https://gitlab.kitware.com/vtk/vtk/-/issues/11988
-     */
-    void ComputePolygonNormal(const std::vector<vtkVector3d>& polygonPoints, double normal[3]);
-
     vtkSmartPointer<vtkTriangle> GetTriangle(const std::vector<vtkVector3d>& points, int vid0, int vid1, int vid2, const vtkVector3d& planeNormal);
 
     /**

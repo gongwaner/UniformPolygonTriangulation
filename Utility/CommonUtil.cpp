@@ -1,5 +1,7 @@
 #include "CommonUtil.h"
 
+#include <vtkVectorOperators.h>
+
 
 namespace Utility
 {
@@ -17,5 +19,19 @@ namespace Utility
         }
 
         return false;
+    }
+
+    vtkVector3d GetAverage(const std::vector<vtkVector3d>& data)
+    {
+        vtkVector3d avg(0, 0, 0);
+        for(const auto& value: data)
+        {
+            avg += value;
+        }
+
+        for(int i = 0; i < 3; ++i)
+            avg[i] /= (double) data.size();
+
+        return avg;
     }
 }

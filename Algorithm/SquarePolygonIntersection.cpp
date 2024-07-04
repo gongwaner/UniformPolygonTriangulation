@@ -1,13 +1,13 @@
 #include "SquarePolygonIntersection.h"
 
-#include "../Utility/PolygonUtil.h"
-#include "../Utility/CommonUtil.h"
-
 #include <vtkBoundingBox.h>
 #include <vtkVectorOperators.h>
 
 #include <queue>
 #include <cfloat>
+
+#include "../Utility/PolygonUtil.h"
+#include "../Utility/CommonUtil.h"
 
 
 namespace Algorithm
