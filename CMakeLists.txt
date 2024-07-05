@@ -40,13 +40,14 @@ add_executable(${PROJECT_NAME} MACOSX_BUNDLE main.cpp
         Algorithm/SquarePolygonIntersection.cpp
         Algorithm/UniformPolygonTriangulation.cpp
         Utility/ActorUtil.cpp
-        Utility/CommonUtil.cpp
         Utility/IOUtil.cpp
         Utility/PolygonUtil.cpp
         Utility/TestUtil.cpp
+        CommonUtility/Common/CommonUtil.cpp
         CommonUtility/Mesh/GeometricObjectUtil.cpp
         CommonUtility/Mesh/MeshUtil.cpp
-        CommonUtility/Polygon/PolygonUtil.cpp)
+        CommonUtility/Polygon/PolygonUtil.cpp
+)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ${VTK_LIBRARIES})
 
