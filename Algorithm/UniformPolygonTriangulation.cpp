@@ -53,17 +53,6 @@ namespace Algorithm
         squareBounds[3] = maxYProj;
     }
 
-    bool EpsilonContains(const std::vector<vtkVector3d>& pointsVector, const vtkVector3d& point, const double epsilon = 1e-6)
-    {
-        for(const auto& p: pointsVector)
-        {
-            if(CommonUtil::EpsilonEqual(p, point, epsilon))
-                return true;
-        }
-
-        return false;
-    }
-
     bool AllPolygonPointsOutsideSquare(const vtkVector3d& planeCenter, const vtkVector3d& axisX, const vtkVector3d& axisY,
                                        const std::vector<vtkVector3d>& squarePoints, const std::vector<vtkVector3d>& polygonPoints, const double epsilon = 1e-6)
     {
@@ -73,7 +62,7 @@ namespace Algorithm
         for(const auto& polyPnt: polygonPoints)
         {
             //point is one of the square point. consider this outside square
-            if(EpsilonContains(squarePoints, polyPnt))
+            if(CommonUtil::EpsilonContains(squarePoints, polyPnt))
                 continue;
 
             //local projection
@@ -104,7 +93,7 @@ namespace Algorithm
         for(const auto& point: points)
         {
             //corner case: if point IS polygon point, it's considered inside polygon
-            if(EpsilonContains(polygonPoints, point))
+            if(CommonUtil::EpsilonContains(polygonPoints, point))
                 continue;
 
             if(!Utility::PointInPolygon(polygonPoints.size(), polygonPointsData2d.data(), polygonBounds, planeCenter, axisX, axisY, point))
@@ -122,7 +111,7 @@ namespace Algorithm
         for(const auto& point: points)
         {
             //corner case: if point IS polygon point, it's considered outside polygon
-            if(EpsilonContains(polygonPoints, point))
+            if(CommonUtil::EpsilonContains(polygonPoints, point))
                 continue;
 
             if(Utility::PointInPolygon(polygonPoints.size(), polygonPointsData2d.data(), polygonBounds, planeCenter, axisX, axisY, point))
