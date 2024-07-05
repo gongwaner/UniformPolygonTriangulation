@@ -6,6 +6,7 @@
 #include <vtkPolygon.h>
 
 #include "../Utility/PolygonUtil.h"
+#include "../CommonUtility/Polygon/PolygonUtil.h"
 
 
 namespace Algorithm
@@ -34,7 +35,7 @@ namespace Algorithm
 
     void OptimalPolygonTriangulation::AddNewTriangle(int vid0, int vid1, int vid2)
     {
-        auto triangle = Utility::GetTriangle(mPolygonPoints, vid0, vid1, vid2, mNormal);
+        auto triangle = PolygonUtil::GetTriangle(mPolygonPoints, vid0, vid1, vid2, mNormal);
         mNewTriangles->InsertNextCell(triangle);
     }
 

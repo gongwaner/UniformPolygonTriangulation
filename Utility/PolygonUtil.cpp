@@ -5,7 +5,6 @@
 #include <vtkPolygon.h>
 #include <vtkVectorOperators.h>
 #include <vtkLine.h>
-#include <vtkTriangle.h>
 
 #include <queue>
 
@@ -66,29 +65,6 @@ namespace Utility
             return LineIntersectionType::Intersection;
 
         return LineIntersectionType::NoIntersection;
-    }
-
-    vtkSmartPointer<vtkTriangle> GetTriangle(const std::vector<vtkVector3d>& points, const int vid0, const int vid1, const int vid2,
-                                             const vtkVector3d& planeNormal)
-    {
-        double triNormal[3];
-        vtkTriangle::ComputeNormal(points[vid0].GetData(), points[vid1].GetData(), points[vid2].GetData(), triNormal);
-
-        auto triangle = vtkSmartPointer<vtkTriangle>::New();
-        if(vtkVector3d(triNormal).Dot(planeNormal) < 0)
-        {
-            triangle->GetPointIds()->SetId(0, vid0);
-            triangle->GetPointIds()->SetId(1, vid1);
-            triangle->GetPointIds()->SetId(2, vid2);
-        }
-        else
-        {
-            triangle->GetPointIds()->SetId(0, vid2);
-            triangle->GetPointIds()->SetId(1, vid1);
-            triangle->GetPointIds()->SetId(2, vid0);
-        }
-
-        return triangle;
     }
 
     bool PointInPolygon(const int numOfPoints, const double* polygonPoints2d, const double polygonBounds[6],

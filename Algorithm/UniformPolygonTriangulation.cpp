@@ -132,8 +132,8 @@ namespace Algorithm
             points->InsertNextPoint(point.GetData());
 
         auto newTris = vtkSmartPointer<vtkCellArray>::New();
-        newTris->InsertNextCell(Utility::GetTriangle(squarePoints, 0, 1, 2, planeNormal));
-        newTris->InsertNextCell(Utility::GetTriangle(squarePoints, 0, 2, 3, planeNormal));
+        newTris->InsertNextCell(PolygonUtil::GetTriangle(squarePoints, 0, 1, 2, planeNormal));
+        newTris->InsertNextCell(PolygonUtil::GetTriangle(squarePoints, 0, 2, 3, planeNormal));
 
         squarePolyData->SetPoints(points);
         squarePolyData->SetPolys(newTris);

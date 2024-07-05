@@ -5,7 +5,6 @@
 
 
 class vtkPolyData;
-class vtkTriangle;
 
 namespace Utility
 {
@@ -28,8 +27,6 @@ namespace Utility
     LineIntersectionType GetLineIntersectionType(const vtkVector3d& line1Start, const vtkVector3d& line1End,
                                                  const vtkVector3d& line2Start, const vtkVector3d& line2End,
                                                  vtkVector3d& intersectionPoint, double epsilon = 1e-6);
-
-    vtkSmartPointer<vtkTriangle> GetTriangle(const std::vector<vtkVector3d>& points, int vid0, int vid1, int vid2, const vtkVector3d& planeNormal);
 
     /**
      * Check if a point if within polygon by projecting it to 2d plane then perform check.
