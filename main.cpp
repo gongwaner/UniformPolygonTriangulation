@@ -15,12 +15,45 @@
 
 #include <chrono>
 
+#include "CommonUtility/Polygon/PolygonUtil.h"
+#include "CommonUtility/IO/IOUtil.h"
+
 #include "Utility/ActorUtil.h"
 #include "Utility/PolygonUtil.h"
 #include "Utility/TestUtil.h"
-#include "Algorithm/UniformPolygonTriangulation.h"
-#include "CommonUtility/Polygon/PolygonUtil.h"
 
+#include "Algorithm/UniformPolygonTriangulation.h"
+
+
+void ExportResult(vtkSmartPointer<vtkPolyData> polyData)
+{
+    const auto cwd = std::filesystem::current_path();
+    printf("current working dir: %s\n", cwd.string().c_str());
+
+    std::filesystem::path dataDir;
+
+#ifdef _WIN32
+    auto projectDir = cwd.parent_path();
+    printf("projectDir dir: %s\n", projectDir.string().c_str());
+#elif __APPLE__
+    auto projectDir = cwd.parent_path().parent_path().parent_path().parent_path();
+    printf("projectDir dir: %s\n", projectDir.string().c_str());
+#else
+    printf("Operating system not supported!\n");
+#endif
+
+    dataDir = projectDir.append("Data");
+    printf("dataDir dir: %s\n", dataDir.string().c_str());
+    if(!std::filesystem::is_directory(dataDir))
+    {
+        printf("data directory does not exist!\n");
+        return;
+    }
+
+    auto outDir = dataDir;
+    outDir = outDir.append("output").append("triangulation_result.stl");
+    IOUtil::WriteMesh(outDir.string().c_str(), polyData);
+}
 
 void TestUniformTriangulation(const std::vector<vtkVector3d>& polygonPoints, const std::vector<std::vector<vtkVector3d>>& holes, bool debug = false)
 {
@@ -35,9 +68,13 @@ void TestUniformTriangulation(const std::vector<vtkVector3d>& polygonPoints, con
     triangulation.SetNormal(polygonNormal);
     triangulation.Triangulate();
 
+    auto triangulatedPolygon = triangulation.GetOutPut();
+
     auto stop = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
     std::cout << "UniformPolygonTriangulation takes " << duration.count() << " ms" << std::endl;
+
+    ExportResult(triangulatedPolygon);
 
     //visualization
     auto colors = vtkSmartPointer<vtkNamedColors>::New();
@@ -74,9 +111,7 @@ void TestUniformTriangulation(const std::vector<vtkVector3d>& polygonPoints, con
 
         //triangulation result
         {
-            auto axisX = triangulation.GetAxisX();
-            auto offset = axisX * ((polygonPolyData->GetBounds()[1] - polygonPolyData->GetBounds()[0]) + 10);
-            auto triangulatedPolygon = triangulation.GetOutPut();
+            auto offset = triangulation.GetAxisX() * ((polygonPolyData->GetBounds()[1] - polygonPolyData->GetBounds()[0]) + 10);
             auto polyDataActor = Utility::GetPolyDataActor(triangulatedPolygon, colors->GetColor3d("DarkOliveGreen").GetData());
             polyDataActor->SetPosition(offset.GetData());
             polyDataActor->GetProperty()->SetRepresentationToWireframe();

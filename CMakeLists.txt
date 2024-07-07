@@ -44,6 +44,7 @@ add_executable(${PROJECT_NAME} MACOSX_BUNDLE main.cpp
         Utility/PolygonUtil.cpp
         Utility/TestUtil.cpp
         CommonUtility/Common/CommonUtil.cpp
+        CommonUtility/IO/IOUtil.cpp
         CommonUtility/Mesh/GeometricObjectUtil.cpp
         CommonUtility/Mesh/MeshUtil.cpp
         CommonUtility/Polygon/PolygonUtil.cpp

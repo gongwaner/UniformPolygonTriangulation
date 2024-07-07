@@ -5,8 +5,10 @@
 #include <vtkVectorOperators.h>
 #include <vtkPolygon.h>
 
-#include "../Utility/PolygonUtil.h"
 #include "../CommonUtility/Polygon/PolygonUtil.h"
+#include "../CommonUtility/Mesh/MeshUtil.h"
+
+#include "../Utility/PolygonUtil.h"
 
 
 namespace Algorithm
@@ -35,7 +37,14 @@ namespace Algorithm
 
     void OptimalPolygonTriangulation::AddNewTriangle(int vid0, int vid1, int vid2)
     {
-        auto triangle = PolygonUtil::GetTriangle(mPolygonPoints, vid0, vid1, vid2, mNormal);
+        const auto triNormal = PolygonUtil::GetTriangleNormal(mPolygonPoints[vid0], mPolygonPoints[vid1], mPolygonPoints[vid2]);
+
+        vtkSmartPointer<vtkTriangle> triangle;
+        if(triNormal.Dot(mNormal) < 0)
+            triangle = PolygonUtil::GetTriangle(vid0, vid1, vid2);
+        else
+            triangle = PolygonUtil::GetTriangle(vid2, vid1, vid0);
+
         mNewTriangles->InsertNextCell(triangle);
     }
 
@@ -291,14 +300,7 @@ namespace Algorithm
 
     void OptimalPolygonTriangulation::GeneratePolyData()
     {
-        mTriangulatedPolygon = vtkSmartPointer<vtkPolyData>::New();
-
-        auto points = vtkSmartPointer<vtkPoints>::New();
-        for(const auto& point: mPolygonPoints)
-            points->InsertNextPoint(point.GetData());
-
-        mTriangulatedPolygon->SetPoints(points);
-        mTriangulatedPolygon->SetPolys(mNewTriangles);
+        mTriangulatedPolygon = MeshUtil::GetPolyData(mPolygonPoints, mNewTriangles);
     }
 
     void OptimalPolygonTriangulation::Triangulate()
