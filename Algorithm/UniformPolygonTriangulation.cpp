@@ -13,8 +13,9 @@
 #include "../CommonUtility/Polygon/PolygonUtil.h"
 #include "../CommonUtility/Common/CommonUtil.h"
 
+#include "../CommonUtility/Polygon/OptimalPolygonTriangulation.h"
+
 #include "SquarePolygonIntersection.h"
-#include "OptimalPolygonTriangulation.h"
 
 
 namespace Algorithm
@@ -288,7 +289,7 @@ namespace Algorithm
         polygonIntersection.SetPlane(mPlaneCenter, mAxisX, mAxisY);
 
         //set up optimal triangulation. weight function and normal only need to be passed once
-        OptimalPolygonTriangulation triangulation;
+        Triangulation::OptimalPolygonTriangulation triangulation;
         triangulation.SetNormal(mNormal);
         triangulation.SetWeightFunction(WeightOfTriangle);
 

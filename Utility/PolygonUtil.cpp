@@ -35,17 +35,6 @@ namespace Utility
         return polygonPolyData;
     }
 
-    bool LineIntersects(const vtkVector3d& line1Start, const vtkVector3d& line1End, const vtkVector3d& line2Start, const vtkVector3d& line2End)
-    {
-        double u, v;
-        int result = vtkLine::Intersection(line1Start.GetData(), line1End.GetData(), line2Start.GetData(), line2End.GetData(), u, v);
-
-        if(result == vtkLine::IntersectionType::NoIntersect)
-            return false;
-
-        return true;
-    }
-
     LineIntersectionType GetLineIntersectionType(const vtkVector3d& line1Start, const vtkVector3d& line1End,
                                                  const vtkVector3d& line2Start, const vtkVector3d& line2End,
                                                  vtkVector3d& intersectionPoint, const double epsilon)

@@ -18,12 +18,6 @@ namespace Utility
 
     vtkSmartPointer<vtkPolyData> GetPolygonPolyData(const std::vector<vtkVector3d>& polygonPoints);
 
-    /**
-     * Check whether 2 lines intersect.
-     * @return False if no intersection. Note: both on line and intersect return true.
-     */
-    bool LineIntersects(const vtkVector3d& line1Start, const vtkVector3d& line1End, const vtkVector3d& line2Start, const vtkVector3d& line2End);
-
     LineIntersectionType GetLineIntersectionType(const vtkVector3d& line1Start, const vtkVector3d& line1End,
                                                  const vtkVector3d& line2Start, const vtkVector3d& line2End,
                                                  vtkVector3d& intersectionPoint, double epsilon = 1e-6);
