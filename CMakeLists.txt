@@ -36,6 +36,7 @@ endif ()
 set(CMAKE_NINJA_FORCE_RESPONSE_FILE "ON" CACHE BOOL "Force Ninja to use response files.")
 
 add_executable(${PROJECT_NAME} MACOSX_BUNDLE main.cpp
+        Algorithm/OptimalPolygonTriangulation.cpp
         Algorithm/SquarePolygonIntersection.cpp
         Algorithm/UniformPolygonTriangulation.cpp
         Utility/ActorUtil.cpp
@@ -47,7 +48,6 @@ add_executable(${PROJECT_NAME} MACOSX_BUNDLE main.cpp
         CommonUtility/Mesh/GeometricObjectUtil.cpp
         CommonUtility/Mesh/MeshUtil.cpp
         CommonUtility/Polygon/PolygonUtil.cpp
-        CommonUtility/Polygon/OptimalPolygonTriangulation.cpp
         CommonUtility/Transformation/TransformUtil.cpp
 )
 
