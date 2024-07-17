@@ -35,14 +35,10 @@ endif ()
 # Prevent a "command line is too long" failure in Windows.
 set(CMAKE_NINJA_FORCE_RESPONSE_FILE "ON" CACHE BOOL "Force Ninja to use response files.")
 
-# Include the Utility folder
 include_directories(
         ${PROJECT_SOURCE_DIR}/Utility
         ${PROJECT_SOURCE_DIR}/CommonUtility
 )
-
-## Add submodule
-#add_subdirectory(CommonUtility)
 
 add_executable(${PROJECT_NAME} MACOSX_BUNDLE main.cpp
         Algorithm/OptimalPolygonTriangulation.cpp
