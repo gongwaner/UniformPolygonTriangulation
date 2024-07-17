@@ -15,8 +15,9 @@
 
 #include <chrono>
 
-#include "CommonUtility/Polygon/PolygonUtil.h"
-#include "CommonUtility/IO/IOUtil.h"
+#include <IO/IOUtil.h>
+#include <Test/TestUtil.h>
+#include <Polygon/PolygonUtil.h>
 
 #include "Utility/ActorUtil.h"
 #include "Utility/PolygonUtil.h"
@@ -27,31 +28,7 @@
 
 void ExportResult(vtkSmartPointer<vtkPolyData> polyData)
 {
-    const auto cwd = std::filesystem::current_path();
-    printf("current working dir: %s\n", cwd.string().c_str());
-
-    std::filesystem::path dataDir;
-
-#ifdef _WIN32
-    auto projectDir = cwd.parent_path();
-    printf("projectDir dir: %s\n", projectDir.string().c_str());
-#elif __APPLE__
-    auto projectDir = cwd.parent_path().parent_path().parent_path().parent_path();
-    printf("projectDir dir: %s\n", projectDir.string().c_str());
-#else
-    printf("Operating system not supported!\n");
-#endif
-
-    dataDir = projectDir.append("Data");
-    printf("dataDir dir: %s\n", dataDir.string().c_str());
-    if(!std::filesystem::is_directory(dataDir))
-    {
-        printf("data directory does not exist!\n");
-        return;
-    }
-
-    auto outDir = dataDir;
-    outDir = outDir.append("output").append("triangulation_result.stl");
+    const auto outDir = TestUtil::GetOutputDir().append("triangulation_result.stl");
     IOUtil::WriteMesh(outDir.string().c_str(), polyData);
 }
 
