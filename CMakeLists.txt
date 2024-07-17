@@ -20,6 +20,7 @@ find_package(VTK COMPONENTS
         IOLegacy
         IOPLY
         IOXML
+        IOImage
         InteractionStyle
         RenderingContextOpenGL2
         RenderingCore
