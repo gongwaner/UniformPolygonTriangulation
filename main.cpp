@@ -15,9 +15,9 @@
 
 #include <chrono>
 
-#include <IO/IOUtil.h>
-#include <Test/TestUtil.h>
-#include <Polygon/PolygonUtil.h>
+#include <CommonUtility/IO/IOUtil.h>
+#include <CommonUtility/Test/TestUtil.h>
+#include <CommonUtility/Polygon/PolygonUtil.h>
 
 #include "Utility/ActorUtil.h"
 #include "Utility/PolygonUtil.h"

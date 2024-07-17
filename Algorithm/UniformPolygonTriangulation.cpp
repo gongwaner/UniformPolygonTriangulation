@@ -6,13 +6,13 @@
 #include <vtkTriangle.h>
 #include <vtkCleanPolyData.h>
 
-#include <Mesh/GeometricObjectUtil.h>
-#include <Mesh/MeshUtil.h>
-#include <Polygon/PolygonUtil.h>
-#include <Common/CommonUtil.h>
+#include <CommonUtility/Mesh/GeometricObjectUtil.h>
+#include <CommonUtility/Mesh/MeshUtil.h>
+#include <CommonUtility/Polygon/PolygonUtil.h>
+#include <CommonUtility/Common/CommonUtil.h>
 
-#include "PolygonUtil.h"
-#include "CommonUtil.h"
+#include "Utility/PolygonUtil.h"
+#include "Utility/CommonUtil.h"
 
 #include "SquarePolygonIntersection.h"
 #include "OptimalPolygonTriangulation.h"

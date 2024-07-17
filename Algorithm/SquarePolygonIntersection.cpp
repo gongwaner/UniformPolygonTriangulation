@@ -6,8 +6,8 @@
 #include <queue>
 #include <cfloat>
 
-#include "PolygonUtil.h"
-#include "CommonUtil.h"
+#include "Utility/PolygonUtil.h"
+#include "Utility/CommonUtil.h"
 
 
 namespace Algorithm

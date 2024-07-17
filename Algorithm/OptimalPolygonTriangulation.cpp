@@ -6,8 +6,8 @@
 #include <vtkVectorOperators.h>
 #include <vtkPolygon.h>
 
-#include <Mesh/MeshUtil.h>
-#include <Polygon/PolygonUtil.h>
+#include <CommonUtility/Mesh/MeshUtil.h>
+#include <CommonUtility/Polygon/PolygonUtil.h>
 
 
 namespace Algorithm
