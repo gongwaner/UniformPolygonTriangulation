@@ -11,30 +11,6 @@
 
 namespace Utility
 {
-    vtkSmartPointer<vtkPolyData> GetPolygonPolyData(const std::vector<vtkVector3d>& polygonPoints)
-    {
-        auto points = vtkSmartPointer<vtkPoints>::New();
-        for(auto& point: polygonPoints)
-        {
-            points->InsertNextPoint(point.GetData());
-        }
-
-        //create boundary
-        auto polygon = vtkSmartPointer<vtkPolygon>::New();
-        for(int i = 0; i < polygonPoints.size(); ++i)
-            polygon->GetPointIds()->InsertNextId(i);
-
-        auto cellArray = vtkSmartPointer<vtkCellArray>::New();
-        cellArray->InsertNextCell(polygon);
-
-        //create a polydata
-        auto polygonPolyData = vtkSmartPointer<vtkPolyData>::New();
-        polygonPolyData->SetPoints(points);
-        polygonPolyData->SetPolys(cellArray);
-
-        return polygonPolyData;
-    }
-
     LineIntersectionType GetLineIntersectionType(const vtkVector3d& line1Start, const vtkVector3d& line1End,
                                                  const vtkVector3d& line2Start, const vtkVector3d& line2End,
                                                  vtkVector3d& intersectionPoint, const double epsilon)

@@ -36,7 +36,7 @@ endif ()
 # Prevent a "command line is too long" failure in Windows.
 set(CMAKE_NINJA_FORCE_RESPONSE_FILE "ON" CACHE BOOL "Force Ninja to use response files.")
 
-include_directories(${PROJECT_SOURCE_DIR})
+set(SUBMODULE_SRC_DIR "${CMAKE_SOURCE_DIR}/CommonUtility/src")
 
 add_executable(${PROJECT_NAME} MACOSX_BUNDLE main.cpp
         Algorithm/OptimalPolygonTriangulation.cpp
@@ -46,13 +46,27 @@ add_executable(${PROJECT_NAME} MACOSX_BUNDLE main.cpp
         Utility/IOUtil.cpp
         Utility/PolygonUtil.cpp
         Utility/TestUtil.cpp
-        CommonUtility/Common/CommonUtil.cpp
-        CommonUtility/IO/IOUtil.cpp
-        CommonUtility/Mesh/GeometricObjectUtil.cpp
-        CommonUtility/Mesh/MeshUtil.cpp
-        CommonUtility/Polygon/PolygonUtil.cpp
-        CommonUtility/Test/TestUtil.cpp
-        CommonUtility/Transformation/TransformUtil.cpp
+        ${SUBMODULE_SRC_DIR}/Common/Color.h
+        ${SUBMODULE_SRC_DIR}/Common/CommonUtil.cpp
+        ${SUBMODULE_SRC_DIR}/IO/IOUtil.cpp
+        ${SUBMODULE_SRC_DIR}/Mesh/GeometricObjectUtil.cpp
+        ${SUBMODULE_SRC_DIR}/Mesh/MeshUtil.cpp
+        ${SUBMODULE_SRC_DIR}/Polygon/PolygonUtil.cpp
+        ${SUBMODULE_SRC_DIR}/Testing/TestUtil.cpp
+        ${SUBMODULE_SRC_DIR}/Transformation/TransformUtil.cpp
+)
+
+target_compile_definitions(${PROJECT_NAME}
+        PRIVATE
+        CMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
+)
+
+target_include_directories(${PROJECT_NAME}
+        PRIVATE
+        ${PROJECT_SOURCE_DIR}
+        ${SUBMODULE_SRC_DIR}/Common
+        ${SUBMODULE_SRC_DIR}/Mesh
+        ${SUBMODULE_SRC_DIR}/Transformation
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ${VTK_LIBRARIES})

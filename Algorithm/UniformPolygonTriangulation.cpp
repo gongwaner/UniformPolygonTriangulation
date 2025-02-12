@@ -6,10 +6,10 @@
 #include <vtkTriangle.h>
 #include <vtkCleanPolyData.h>
 
-#include <CommonUtility/Mesh/GeometricObjectUtil.h>
-#include <CommonUtility/Mesh/MeshUtil.h>
-#include <CommonUtility/Polygon/PolygonUtil.h>
-#include <CommonUtility/Common/CommonUtil.h>
+#include "GeometricObjectUtil.h"
+#include "MeshUtil.h"
+#include <CommonUtility/src/Polygon/PolygonUtil.h>
+#include <CommonUtility/src/Common/CommonUtil.h>
 
 #include "Utility/PolygonUtil.h"
 #include "Utility/CommonUtil.h"

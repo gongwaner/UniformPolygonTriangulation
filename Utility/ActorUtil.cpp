@@ -6,7 +6,7 @@
 #include <vtkPoints.h>
 #include <vtkProperty.h>
 
-#include <CommonUtility/Mesh/GeometricObjectUtil.h>
+#include "GeometricObjectUtil.h"
 
 
 namespace Utility

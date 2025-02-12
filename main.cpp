@@ -14,10 +14,12 @@
 #include <vtkRenderer.h>
 
 #include <chrono>
+#include <filesystem>
 
-#include <CommonUtility/IO/IOUtil.h>
-#include <CommonUtility/Test/TestUtil.h>
-#include <CommonUtility/Polygon/PolygonUtil.h>
+#include <CommonUtility/src/IO/IOUtil.h>
+#include <CommonUtility/src/Testing/TestUtil.h>
+#include <CommonUtility/src/Polygon/PolygonUtil.h>
+#include "GeometricObjectUtil.h"
 
 #include "Utility/ActorUtil.h"
 #include "Utility/PolygonUtil.h"
@@ -28,8 +30,9 @@
 
 void ExportResult(vtkSmartPointer<vtkPolyData> polyData)
 {
-    const auto outDir = TestUtil::GetOutputDir().append("triangulation_result.stl");
-    IOUtil::WriteMesh(outDir.string().c_str(), polyData);
+    const std::filesystem::path outputDir{TestUtil::GetOutputDir()};
+    const auto outDir = outputDir / "triangulation_result.stl";
+    IOUtil::WriteMesh(outDir.string(), polyData);
 }
 
 void TestUniformTriangulation(const std::vector<vtkVector3d>& polygonPoints, const std::vector<std::vector<vtkVector3d>>& holes, bool debug = false)
@@ -58,7 +61,7 @@ void TestUniformTriangulation(const std::vector<vtkVector3d>& polygonPoints, con
     std::vector<vtkSmartPointer<vtkActor>> actors;
     {
         //polygon
-        auto polygonPolyData = Utility::GetPolygonPolyData(polygonPoints);
+        auto polygonPolyData = GeometricObjectUtil::GetContourPolygonPolyData(polygonPoints);
         TestUtil::AddPolyData(polygonPolyData, colors->GetColor3d("LightSteelBlue").GetData(), actors, true);
         for(int i = 0; i < polygonPoints.size(); ++i)
         {
@@ -73,7 +76,7 @@ void TestUniformTriangulation(const std::vector<vtkVector3d>& polygonPoints, con
         for(int holeID = 0; holeID < holes.size(); ++holeID)
         {
             auto hole = holes[holeID];
-            auto holePolyData = Utility::GetPolygonPolyData(hole);
+            auto holePolyData = GeometricObjectUtil::GetContourPolygonPolyData(hole);
             TestUtil::AddPolyData(holePolyData, colors->GetColor3d("Navy").GetData(), actors, true);
 
             auto middlePointsColor = holeID == 0 ? colors->GetColor3d("Thistle").GetData() : colors->GetColor3d("Indigo").GetData();

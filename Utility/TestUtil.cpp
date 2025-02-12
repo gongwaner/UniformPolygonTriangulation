@@ -4,8 +4,7 @@
 #include <vtkPolyData.h>
 #include <vtkActor.h>
 
-#include <CommonUtility/Mesh/GeometricObjectUtil.h>
-
+#include "GeometricObjectUtil.h"
 #include "ActorUtil.h"
 
 
