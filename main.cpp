@@ -1,14 +1,10 @@
 #include <vtkPolyData.h>
 #include <vtkActor.h>
-#include <vtkCamera.h>
 #include <vtkColor.h>
 #include <vtkNamedColors.h>
 #include <vtkProperty.h>
-#include <vtkCellPicker.h>
 #include <vtkVectorOperators.h>
 
-#include <vtkInteractorStyleTrackballCamera.h>
-#include <vtkRendererCollection.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkRenderer.h>
@@ -16,21 +12,36 @@
 #include <chrono>
 #include <filesystem>
 
-#include <CommonUtility/src/IO/IOUtil.h>
-#include <CommonUtility/src/Testing/TestUtil.h>
-#include <CommonUtility/src/Polygon/PolygonUtil.h>
+//files from CommonUtility submodule
+#include "IOUtil.h"
+#include "PolygonUtil.h"
 #include "GeometricObjectUtil.h"
 
 #include "Utility/ActorUtil.h"
-#include "Utility/PolygonUtil.h"
 #include "Utility/TestUtil.h"
 
 #include "Algorithm/UniformPolygonTriangulation.h"
 
 
+std::string GetDataDir()
+{
+    const std::filesystem::path cmakeDir(CMAKE_SOURCE_DIR);
+    const auto dataDir = cmakeDir / "Data";
+
+    return dataDir.string();
+}
+
+std::string GetOutputDir()
+{
+    const std::filesystem::path dataFolderDir(GetDataDir());
+    const auto outputFolderDir = dataFolderDir / "output";
+
+    return outputFolderDir.string();
+}
+
 void ExportResult(vtkSmartPointer<vtkPolyData> polyData)
 {
-    const std::filesystem::path outputDir{TestUtil::GetOutputDir()};
+    const std::filesystem::path outputDir{GetOutputDir()};
     const auto outDir = outputDir / "triangulation_result.stl";
     IOUtil::WriteMesh(outDir.string(), polyData);
 }
@@ -58,8 +69,7 @@ void TestUniformTriangulation(const std::vector<vtkVector3d>& polygonPoints, con
 
     //visualization
     auto colors = vtkSmartPointer<vtkNamedColors>::New();
-    std::vector<vtkSmartPointer<vtkActor>> actors;
-    {
+    std::vector<vtkSmartPointer<vtkActor>> actors; {
         //polygon
         auto polygonPolyData = GeometricObjectUtil::GetContourPolygonPolyData(polygonPoints);
         TestUtil::AddPolyData(polygonPolyData, colors->GetColor3d("LightSteelBlue").GetData(), actors, true);

@@ -6,10 +6,11 @@
 #include <vtkTriangle.h>
 #include <vtkCleanPolyData.h>
 
+//submodule files
 #include "GeometricObjectUtil.h"
 #include "MeshUtil.h"
-#include <CommonUtility/src/Polygon/PolygonUtil.h>
-#include <CommonUtility/src/Common/CommonUtil.h>
+#include "PolygonUtil.h"
+#include "CommonUtil.h"
 
 #include "Utility/PolygonUtil.h"
 #include "Utility/CommonUtil.h"
@@ -55,7 +56,8 @@ namespace Algorithm
     }
 
     bool AllPolygonPointsOutsideSquare(const vtkVector3d& planeCenter, const vtkVector3d& axisX, const vtkVector3d& axisY,
-                                       const std::vector<vtkVector3d>& squarePoints, const std::vector<vtkVector3d>& polygonPoints, const double epsilon = 1e-6)
+                                       const std::vector<vtkVector3d>& squarePoints, const std::vector<vtkVector3d>& polygonPoints,
+                                       const double epsilon = 1e-6)
     {
         double squareBounds[4];
         GetSquareBounds2D(planeCenter, axisX, axisY, squarePoints, squareBounds);
@@ -88,7 +90,8 @@ namespace Algorithm
         return true;
     }
 
-    bool AllPointsInPolygon(const std::vector<vtkVector3d>& polygonPoints, const std::vector<double>& polygonPointsData2d, const vtkVector3d& planeCenter,
+    bool AllPointsInPolygon(const std::vector<vtkVector3d>& polygonPoints, const std::vector<double>& polygonPointsData2d,
+                            const vtkVector3d& planeCenter,
                             const vtkVector3d& axisX, const vtkVector3d& axisY, const double polygonBounds[6], const std::vector<vtkVector3d>& points)
     {
         for(const auto& point: points)
@@ -106,8 +109,10 @@ namespace Algorithm
         return true;
     }
 
-    bool AllPointsOutsidePolygon(const std::vector<vtkVector3d>& polygonPoints, const std::vector<double>& polygonPointsData2d, const vtkVector3d& planeCenter,
-                                 const vtkVector3d& axisX, const vtkVector3d& axisY, const double polygonBounds[6], const std::vector<vtkVector3d>& points)
+    bool AllPointsOutsidePolygon(const std::vector<vtkVector3d>& polygonPoints, const std::vector<double>& polygonPointsData2d,
+                                 const vtkVector3d& planeCenter,
+                                 const vtkVector3d& axisX, const vtkVector3d& axisY, const double polygonBounds[6],
+                                 const std::vector<vtkVector3d>& points)
     {
         for(const auto& point: points)
         {
@@ -230,7 +235,7 @@ namespace Algorithm
                 minYProj = yProj;
         }
 
-        polygonBoundingBox.GetBounds(mPolygonBounds);//bounds of AABB
+        polygonBoundingBox.GetBounds(mPolygonBounds); //bounds of AABB
 
         //obb bounds
         mBoundingBoxWidth = maxXProj - minXProj;

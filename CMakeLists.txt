@@ -36,7 +36,8 @@ endif ()
 # Prevent a "command line is too long" failure in Windows.
 set(CMAKE_NINJA_FORCE_RESPONSE_FILE "ON" CACHE BOOL "Force Ninja to use response files.")
 
-set(SUBMODULE_SRC_DIR "${CMAKE_SOURCE_DIR}/CommonUtility/src")
+# Add the submodule as a subdirectory
+add_subdirectory(CommonUtility)
 
 add_executable(${PROJECT_NAME} MACOSX_BUNDLE main.cpp
         Algorithm/OptimalPolygonTriangulation.cpp
@@ -46,14 +47,6 @@ add_executable(${PROJECT_NAME} MACOSX_BUNDLE main.cpp
         Utility/IOUtil.cpp
         Utility/PolygonUtil.cpp
         Utility/TestUtil.cpp
-        ${SUBMODULE_SRC_DIR}/Common/Color.h
-        ${SUBMODULE_SRC_DIR}/Common/CommonUtil.cpp
-        ${SUBMODULE_SRC_DIR}/IO/IOUtil.cpp
-        ${SUBMODULE_SRC_DIR}/Mesh/GeometricObjectUtil.cpp
-        ${SUBMODULE_SRC_DIR}/Mesh/MeshUtil.cpp
-        ${SUBMODULE_SRC_DIR}/Polygon/PolygonUtil.cpp
-        ${SUBMODULE_SRC_DIR}/Testing/TestUtil.cpp
-        ${SUBMODULE_SRC_DIR}/Transformation/TransformUtil.cpp
 )
 
 target_compile_definitions(${PROJECT_NAME}
@@ -64,12 +57,13 @@ target_compile_definitions(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME}
         PRIVATE
         ${PROJECT_SOURCE_DIR}
-        ${SUBMODULE_SRC_DIR}/Common
-        ${SUBMODULE_SRC_DIR}/Mesh
-        ${SUBMODULE_SRC_DIR}/Transformation
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE ${VTK_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}
+        PRIVATE
+        ${VTK_LIBRARIES}
+        CommonUtility
+)
 
 # vtk_module_autoinit is needed
 vtk_module_autoinit(
